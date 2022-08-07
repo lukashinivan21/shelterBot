@@ -22,23 +22,26 @@ public class StringConstants {
     public static final String MESS_FOR_DOG_OWNER = "Так как вы уже выбрали питомник для собак, то выбрать питомник для кошек вы не можете...";
 
     public static final String MAIN_GREETING = "Привет, пользователь. Я помогу тебе подобрать самого веселого и замечательного четвероного друга из нашего питомника." +
-            " Выбери один из пунктов главного меню. \nВ любой момент при необходимости возврата к главному меню " +
-            "введи команду \"/start\" (без кавычек)." +
-            "\nВ списке ниже представлены другие мои функции: \n/myPhoneNumber - могу напомнить введенный тобой номер твоего телефона для связи" +
-            "\n/";
+            " Выбери один из приютов: приют для собак или приют для кошек. \nХочу предупредить, что после выбора одного из приютов выбрать другой уже не получится.";
+
+    public static final String SECOND_GREETING = """
+
+            Ниже вы можете видеть главное меню. Выберите один из его пунктов...
+            В любой момент при необходимости возврата к главному меню введите команду /start""";
+
 
     public static final String MESS_DEFAULT = "Воспользуйтесь главным меню";
 
     public static final String NO_FIRST_VISIT = "Пользователь, я рад, что ты снова к нам вернулся. Выбери один из пунктов главного меню..." +
             "\nНапоминаю, что в любой момент при необходимости возврата к главному меню " +
-            "введи команду \"/start\" (без кавычек).";
+            "введи команду /start (без кавычек).";
 
     public static final String CALLBACK_BUTTON4 = "Волонтер";
     public static final String MESS_FOR_BUTTON4 = "Волонтер подключиться к чату в ближайшее время...";
 
     public static final String TEXT_BUTTON1 = "Узнать информацию о приюте";
 
-    public static final String TEXT_BUTTON2 = "Как взять собаку из приюта";
+    public static final String TEXT_BUTTON2 = "Как взять питомца из приюта";
 
     public static final String TEXT_BUTTON3 = "Прислать отчет о питомце";
     public static final String MESS_FOR_BUTTON3 = "Выберите один из пунктов меню для ознакомления с инструкциями и рекомендациями. Если же вы готовы отправить" +
@@ -56,11 +59,11 @@ public class StringConstants {
     public static final String CALLBACK_BUTTON6 = "Адрес";
     public static final String MESS_FOR_BUTTON6 = "Пользователь, в файле ты найдешь информацию о графике работы приюта, адрес и номер телефона для связи";
 
-    public static final String TEXT_BUTTON7 = "Техника безопасности на территории приюта";
+    public static final String TEXT_BUTTON7 = "Техника безопасности на территории\nприюта";
     public static final String CALLBACK_BUTTON7 = "Рекомендация";
     public static final String MESS_FOR_BUTTON7 = "Пользователь, в файле ты найдешь необходимые рекомендации о технике безопасности на территории приюта.";
 
-    public static final String TEXT_BUTTON8 = "Могу записать ваши контактные данные для связи";
+    public static final String TEXT_BUTTON8 = "Могу записать ваши контактные\nданные для связи";
     public static final String CALLBACK_BUTTON8 = "Контакт";
     public static final String MESS_FOR_BUTTON8 = "В ответном сообщении введи свои контакты в виде: \"+xxxxxxxxxxx ФИО\", где x - цифра от 0 до 9. " +
             "Ответное сообщение без кавычек." + " Номер телефона и ФИО обязательны для заполнения. ФИО может содержать фамилию и имя или же только имя";
@@ -79,23 +82,23 @@ public class StringConstants {
     public static final String CALLBACK_BUTTON11 = "Транспорт";
     public static final String MESS_FOR_BUTTON11 = "В файле находятся рекомендации для безопасной транспортировки животного";
 
-    public static final String TEXT_BUTTON12 = "Рекомендации по обустройству дома для детеныша";
+    public static final String TEXT_BUTTON12 = "Рекомендации по обустройству\nдома для детеныша";
     public static final String CALLBACK_BUTTON12 = "Щенок";
     public static final String MESS_FOR_BUTTON12 = "В файле находятся рекомендации по обустройству дома для детеныша";
 
-    public static final String TEXT_BUTTON13 = "Рекомендации по обустройству дома взрослого животного";
+    public static final String TEXT_BUTTON13 = "Рекомендации по обустройству дома\nдля взрослого животного";
     public static final String CALLBACK_BUTTON13 = "Взрослая";
     public static final String MESS_FOR_BUTTON13 = "В файле находятся рекомендации по обустройству дома для взрослого животного";
 
-    public static final String TEXT_BUTTON14 = "Рекомендации по обустройству дома для животного с ограниченными возможностями";
+    public static final String TEXT_BUTTON14 = "Рекомендации по обустройству дома\nдля животного с ограниченными возможностями";
     public static final String CALLBACK_BUTTON14 = "Обустройство";
     public static final String MESS_FOR_BUTTON14 = "В файле находятся рекомендации по обустройству дома для животного с ограниченными возможностями";
 
-    public static final String TEXT_BUTTON15 = "Советы кинолога по первичному общению с собакой";
+    public static final String TEXT_BUTTON15 = "Советы кинолога по первичному\nобщению с собакой";
     public static final String CALLBACK_BUTTON15 = "Советы";
     public static final String MESS_FOR_BUTTON15 = "В файле находятся рекомендации кинологов для успешного первичного знакомства с собакой";
 
-    public static final String TEXT_BUTTON16 = "Список проверенных кинологов для дальнейших консультаций";
+    public static final String TEXT_BUTTON16 = "Список проверенных кинологов\nдля дальнейших консультаций";
     public static final String CALLBACK_BUTTON16 = "Кинологи";
     public static final String MESS_FOR_BUTTON16 = "В файле находится список кинологов, проверенных сотрудниками нашего питомника";
 
@@ -107,23 +110,25 @@ public class StringConstants {
     public static final String CALLBACK_BUTTON18 = "Форма";
     public static final String MESS_FOR_BUTTON18 = "Форма отчета";
 
-    public static final String TEXT_BUTTON19 = "Инструкция по заполнению и отправки отчета";
+    public static final String TEXT_BUTTON19 = "Инструкция по заполнению\nи отправке отчета";
     public static final String CALLBACK_BUTTON19 = "Заполнение";
     public static final String MESS_FOR_BUTTON19 = "Инструкция";
+
+    public static final String DEFAULT_CAPTION = "Кажется произошла ошибка...";
 
     public static final String CHECK_MESS = "Проверьте правильность введенных данных или введите команду \"/start\" для отмены ввода контактных данных и " +
             "возврата в главное меню";
 
     public static final String SUCCESS_ADD = "Ваши контакты были успешно сохранены";
 
-//    public static final String REPORT_OK_MESS = "Благодарю. Полученное текстовое описание было успешно сохранено. Теперь отправьте фото питомца.";
 
     public static final String REPORT_OK = "Ваш отчет полностью соотвествует требованиям. Полученные данные были успешно сохранены." +
             "\nНапоминаю, что отчеты необходимо отправлять ежедневно в течение всего испытательного срока";
 
-//    public static final String REPORT_OK_PHOTO = "Ваше фото было успешно получено. Напоминаю, что отчеты необходимо отправлять ежедневно в течение всего испытательного срока";
+    public static final String REPORT_NOT_FULL = "В отправленном отчете не хватает текстового описания. Будьте внимательнее! И в ответном" +
+            " сообщении отправьте фото вместе с текстовым описанием одним сообщением";
 
-    public static final String REPORT_NOT_FULL = "В отправленном отчете не хватает либо фото, либо текстового описания. Будьте внимательнее! И в ответном" +
+    public static final String REPORT_WITHOUT_PHOTO = "В отправленном отчете не хватает фото. Будьте внимательнее! И в ответном" +
             " сообщении отправьте фото вместе с текстовым описанием одним сообщением";
 
     private static final String[] callBacks = {CALLBACK_BUTTON5, CALLBACK_BUTTON6, CALLBACK_BUTTON7, CALLBACK_BUTTON9, CALLBACK_BUTTON10, CALLBACK_BUTTON11, CALLBACK_BUTTON12,
