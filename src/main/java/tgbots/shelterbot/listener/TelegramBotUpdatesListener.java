@@ -45,7 +45,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message message = update.message();
             CallbackQuery callbackQuery = update.callbackQuery();
 
-            if (message != null) {
+            if (message != null && message.photo() == null) {
                 logger.info("New message from user: {}, userId: {}, chatId: {}, with text: {}", message.from().username(), message.from().id(),
                         message.chat().id(), message.text());
                 SendMessage sendMessage = mainHandler.handleMessage(message);
@@ -67,7 +67,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     }
                 } else {
                     logger.info("Answer on this callback is message");
-                    SendMessage msg = mainHandler.handleCallbackQuery(callbackQuery);
+                    SendMessage msg = mainHandler.handleCallbackQueryAndSendMessage(callbackQuery);
                     if (msg != null) {
                         telegramBot.execute(msg);
                     }
