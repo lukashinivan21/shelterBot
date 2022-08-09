@@ -9,8 +9,8 @@ import com.pengrad.telegrambot.request.SendDocument;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tgbots.shelterbot.service.HandlerCallbacks;
 import tgbots.shelterbot.service.MainHandler;
 
 import javax.annotation.PostConstruct;
@@ -25,13 +25,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
     private final MainHandler mainHandler;
+    private final HandlerCallbacks handlerCallbacks;
 
+    private final TelegramBot telegramBot;
 
-    @Autowired
-    private TelegramBot telegramBot;
-
-    public TelegramBotUpdatesListener(MainHandler mainHandler) {
+    public TelegramBotUpdatesListener(MainHandler mainHandler, HandlerCallbacks handlerCallbacks, TelegramBot telegramBot) {
         this.mainHandler = mainHandler;
+        this.handlerCallbacks = handlerCallbacks;
+        this.telegramBot = telegramBot;
     }
 
     @PostConstruct
@@ -45,6 +46,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Message message = update.message();
             CallbackQuery callbackQuery = update.callbackQuery();
 
+
             if (message != null && message.photo() == null) {
                 logger.info("New message from user: {}, userId: {}, chatId: {}, with text: {}", message.from().username(), message.from().id(),
                         message.chat().id(), message.text());
@@ -54,6 +56,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
             }
 
+
             if (callbackQuery != null) {
                 logger.info("New callbackQuery from user: {}, userId: {}, with data: {}", callbackQuery.from().username(),
                         callbackQuery.from().id(), callbackQuery.data());
@@ -61,13 +64,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
                 if (LIST_CALLBACKS.contains(data)) {
                     logger.info("Answer on this callback is document with caption");
-                    SendDocument doc = mainHandler.handleCallbackAndSendDocument(callbackQuery);
+                    SendDocument doc = handlerCallbacks.handleCallbackAndSendDocument(callbackQuery);
                     if (doc != null) {
                         telegramBot.execute(doc);
                     }
                 } else {
                     logger.info("Answer on this callback is message");
-                    SendMessage msg = mainHandler.handleCallbackQueryAndSendMessage(callbackQuery);
+                    SendMessage msg = handlerCallbacks.handleCallbackQueryAndSendMessage(callbackQuery);
                     if (msg != null) {
                         telegramBot.execute(msg);
                     }
@@ -84,9 +87,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
             }
         });
-
-
-
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }

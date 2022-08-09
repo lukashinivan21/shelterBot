@@ -1,8 +1,10 @@
 package tgbots.shelterbot.models;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "candidate_dog_shelter")
 public class DogCandidate extends Candidate{
 
     public DogCandidate() {
