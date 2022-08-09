@@ -45,7 +45,7 @@ public class StringConstants {
 
     public static final String TEXT_BUTTON3 = "Прислать отчет о питомце";
     public static final String MESS_FOR_BUTTON3 = "Выберите один из пунктов меню для ознакомления с инструкциями и рекомендациями. Если же вы готовы отправить" +
-            " отчет, то отправьте фото питомца с текстовым описанием одним сообщением";
+            " отчет, то отправьте одно фото питомца, на котором его хорошо видно, с текстовым описанием (подписью). Все это должно быть отправлено одним сообщением.";
 
     public static final String TEXT_BUTTON4 = "Позвать волонтера";
 
@@ -130,6 +130,8 @@ public class StringConstants {
 
     public static final String REPORT_WITHOUT_PHOTO = "В отправленном отчете не хватает фото. Будьте внимательнее! И в ответном" +
             " сообщении отправьте фото вместе с текстовым описанием одним сообщением";
+
+    public static final String ERROR = "Произошла ошибка. Попробуйте отправить отчет позднее...";
 
     private static final String[] callBacks = {CALLBACK_BUTTON5, CALLBACK_BUTTON6, CALLBACK_BUTTON7, CALLBACK_BUTTON9, CALLBACK_BUTTON10, CALLBACK_BUTTON11, CALLBACK_BUTTON12,
             CALLBACK_BUTTON13, CALLBACK_BUTTON14, CALLBACK_BUTTON15, CALLBACK_BUTTON16, CALLBACK_BUTTON17, CALLBACK_BUTTON18, CALLBACK_BUTTON19};

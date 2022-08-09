@@ -9,7 +9,7 @@ public interface MainHandler {
 
     SendMessage handleMessage(Message message);
 
-    SendMessage handleCallbackQuery(CallbackQuery callbackQuery);
+    SendMessage handleCallbackQueryAndSendMessage(CallbackQuery callbackQuery);
 
     SendDocument handleCallbackAndSendDocument(CallbackQuery callbackQuery);
 
