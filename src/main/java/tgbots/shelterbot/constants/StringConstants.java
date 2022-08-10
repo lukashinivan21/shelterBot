@@ -116,7 +116,7 @@ public class StringConstants {
 
     public static final String DEFAULT_CAPTION = "Кажется произошла ошибка...";
 
-    public static final String CHECK_MESS = "Проверьте правильность введенных данных или введите команду \"/start\" для отмены ввода контактных данных и " +
+    public static final String CHECK_MESS = "Проверьте правильность введенных данных или введите команду /start для отмены ввода контактных данных и " +
             "возврата в главное меню";
 
     public static final String SUCCESS_ADD = "Ваши контакты были успешно сохранены";
@@ -137,5 +137,9 @@ public class StringConstants {
             CALLBACK_BUTTON13, CALLBACK_BUTTON14, CALLBACK_BUTTON15, CALLBACK_BUTTON16, CALLBACK_BUTTON17, CALLBACK_BUTTON18, CALLBACK_BUTTON19};
 
     public static final List<String> LIST_CALLBACKS = new ArrayList<>(List.of(callBacks));
+
+    public static final String MENTION_TO_SEND_REPORT = "Приветствую, пользователь. Я заметил, что с момента отправки тобой последнего отчета прошло более одного дня." +
+            "\nХочу напомнить, что в течение всего испытательного срока отчеты необходимо отправлять каждый день. Это является одним из условий успешного прохождения " +
+            "испытательного срока, поэтому не забудь отправить отчет в ближайшее время";
 
 }

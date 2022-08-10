@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@Table(name = "reports")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Report {
 
@@ -27,6 +26,7 @@ public class Report {
     private Long fileSize;
 
     @Column(name = "report_data")
+    @Lob
     private byte[] data;
 
     public Report(Long idReport, String caption, LocalDate dateReport, String filePath, Long fileSize, byte[] data) {

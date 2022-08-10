@@ -27,7 +27,7 @@ CREATE TABLE report_dog
     report_date DATE   NOT NULL,
     file_path   TEXT   NOT NULL,
     file_size   bigint NOT NULL,
-    report_data oid    NOT NULL
+    report_data bigint  NOT NULL
 );
 
 CREATE TABLE report_cat
@@ -37,5 +37,5 @@ CREATE TABLE report_cat
     report_date DATE   NOT NULL,
     file_path   TEXT   NOT NULL,
     file_size   bigint NOT NULL,
-    report_data oid    NOT NULL
+    report_data bigint  NOT NULL
 );

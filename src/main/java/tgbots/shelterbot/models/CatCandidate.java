@@ -1,11 +1,16 @@
 package tgbots.shelterbot.models;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
 @Table(name = "candidate_cat_shelter")
 public class CatCandidate extends Candidate {
+
+    @OneToMany
+    private Set<CatReport> catReports;
 
     public CatCandidate() {
         super();

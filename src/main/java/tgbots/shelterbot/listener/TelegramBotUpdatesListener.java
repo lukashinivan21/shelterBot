@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.request.SendDocument;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tgbots.shelterbot.service.HandlerCallbacks;
 import tgbots.shelterbot.service.MainHandler;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static tgbots.shelterbot.constants.StringConstants.LIST_CALLBACKS;
+import static tgbots.shelterbot.constants.StringConstants.MENTION_TO_SEND_REPORT;
 
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
@@ -89,5 +91,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         });
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+
+    @Scheduled(cron = "0 15 12 * * *")
+    public void mentionForUserToSendReport() {
+        List<Long> ids = mainHandler.idsForMentionToSendReport();
+        ids.forEach(id -> telegramBot.execute(new SendMessage(id, MENTION_TO_SEND_REPORT)));
     }
 }

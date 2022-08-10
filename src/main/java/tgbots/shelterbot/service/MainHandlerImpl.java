@@ -14,19 +14,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tgbots.shelterbot.constants.Keyboards;
-import tgbots.shelterbot.models.BotState;
-import tgbots.shelterbot.models.Candidate;
-import tgbots.shelterbot.models.CatCandidate;
-import tgbots.shelterbot.models.DogCandidate;
+import tgbots.shelterbot.models.*;
 import tgbots.shelterbot.repository.CatCandidateRepository;
 import tgbots.shelterbot.repository.DogCandidateRepository;
+import tgbots.shelterbot.repository.ReportCatRepository;
+import tgbots.shelterbot.repository.ReportDogRepository;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,13 +45,17 @@ public class MainHandlerImpl implements MainHandler {
 
     private final DogCandidateRepository dogCandidateRepository;
     private final CatCandidateRepository catCandidateRepository;
+    private final ReportDogRepository reportDogRepository;
+    private final ReportCatRepository reportCatRepository;
 
     private final Pattern pattern = Pattern.compile("([+0-9]{10,})(\\s*)([\\W+]+)");
 
-    public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository, CatCandidateRepository catCandidateRepository) {
+    public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository, CatCandidateRepository catCandidateRepository, ReportDogRepository reportDogRepository, ReportCatRepository reportCatRepository) {
         this.bot = bot;
         this.dogCandidateRepository = dogCandidateRepository;
         this.catCandidateRepository = catCandidateRepository;
+        this.reportDogRepository = reportDogRepository;
+        this.reportCatRepository = reportCatRepository;
     }
 
 
@@ -178,7 +185,6 @@ public class MainHandlerImpl implements MainHandler {
     }
 
 
-
     @Override
     public SendMessage handleMessageWithPhoto(Message message) {
 
@@ -190,9 +196,11 @@ public class MainHandlerImpl implements MainHandler {
 
         SendMessage sendMessage = null;
 
+
         if (candidate.getBotState().equals(BotState.GET_REPORT.toString()) && message.caption() != null) {
             String caption = message.caption();
-            String today = LocalDate.now().toString();
+            LocalDate dateToday = LocalDate.now();
+            String today = dateToday.toString();
             PhotoSize[] photo = message.photo();
             String fileId = photo[0].fileId();
             GetFile request = new GetFile(fileId);
@@ -201,7 +209,7 @@ public class MainHandlerImpl implements MainHandler {
             String path = file.filePath();
             try {
                 byte[] data = bot.getFileContent(file);
-                uploadReport(chatId, fileId, data, file, userName, today, caption, path);
+                uploadReport(chatId, data, file, userName, today, caption, path, dateToday);
                 sendMessage = collectSendMessage(chatId, REPORT_OK);
             } catch (IOException e) {
                 logger.info("Something happens...");
@@ -221,7 +229,7 @@ public class MainHandlerImpl implements MainHandler {
     @Value("${telegram.bot.token}")
     private String token;
 
-    private void uploadReport(Long id, String fileId, byte[] data, File file, String userName, String today, String caption, String path) throws IOException {
+    private void uploadReport(Long id, byte[] data, File file, String userName, String today, String caption, String path, LocalDate dateToday) throws IOException {
         logger.info("Upload report from user with id: {}, username: {}", id, userName);
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
         List<Long> catIds = catCandidateRepository.findAll().stream().map(CatCandidate::getId).toList();
@@ -245,11 +253,71 @@ public class MainHandlerImpl implements MainHandler {
             bis.transferTo(bos);
         }
 
+        if (dogIds.contains(id)) {
+            DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateById(id);
+            DogReport newDogReport = new DogReport();
+            newDogReport.setData(data);
+            newDogReport.setDateReport(dateToday);
+            newDogReport.setCaption(caption);
+            newDogReport.setFileSize(file.fileSize());
+            newDogReport.setFilePath(filePath.toString());
+            newDogReport.setDogCandidate(dogCandidate);
 
+            reportDogRepository.save(newDogReport);
+
+        } else if (catIds.contains(id)) {
+            CatCandidate catCandidate = catCandidateRepository.findCatCandidateById(id);
+            Optional<CatReport> catReport = Optional.ofNullable(reportCatRepository.findCatReportByDateReportAndCatCandidate_Id(dateToday, id));
+            CatReport newCatReport = catReport.orElse(new CatReport());
+            newCatReport.setCatCandidate(catCandidate);
+            newCatReport.setDateReport(dateToday);
+            newCatReport.setCaption(caption);
+            newCatReport.setData(data);
+            newCatReport.setFilePath(filePath.toString());
+            newCatReport.setFileSize(file.fileSize());
+
+            reportCatRepository.save(newCatReport);
+        }
     }
 
     private String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    @Override
+    public List<Long> idsForMentionToSendReport() {
+        LocalDate rightNow = LocalDate.now();
+        List<Long> resultIds = new ArrayList<>();
+
+        List<Long> dogIds = dogCandidateRepository.findAll()
+                .stream()
+                .map(DogCandidate::getId)
+                .filter(id -> !reportDogRepository.findDogReportByDogCandidate_Id(id).isEmpty()).toList();
+
+        List<Long> catIds = catCandidateRepository.findAll()
+                .stream()
+                .map(CatCandidate::getId)
+                .filter(id -> !reportCatRepository.findCatReportByCatCandidate_Id(id).isEmpty()).toList();
+
+        for (Long id : dogIds) {
+            List<DogReport> dogReports = reportDogRepository.findDogReportByDogCandidate_Id(id).stream().sorted(Comparator.comparing(DogReport::getDateReport)).toList();
+            LocalDate date = dogReports.get(dogReports.size() - 1).getDateReport();
+            Period period = Period.between(rightNow, date);
+            if (Math.abs(period.getDays()) > 1) {
+                resultIds.add(id);
+            }
+        }
+
+        for (Long id : catIds) {
+            List<CatReport> catReports = reportCatRepository.findCatReportByCatCandidate_Id(id).stream().sorted(Comparator.comparing(CatReport::getDateReport)).toList();
+            LocalDate date = catReports.get(catReports.size() - 1).getDateReport();
+            Period period = Period.between(rightNow, date);
+            if (Math.abs(period.getDays()) > 1) {
+                resultIds.add(id);
+            }
+        }
+
+        return resultIds;
     }
 
 
