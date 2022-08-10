@@ -94,9 +94,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
 
-    @Scheduled(cron = "0 15 12 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void mentionForUserToSendReport() {
         List<Long> ids = mainHandler.idsForMentionToSendReport();
-        ids.forEach(id -> telegramBot.execute(new SendMessage(id, MENTION_TO_SEND_REPORT)));
+        if (!ids.isEmpty()) {
+            ids.forEach(id -> telegramBot.execute(new SendMessage(id, MENTION_TO_SEND_REPORT)));
+        }
     }
+
+
+
 }

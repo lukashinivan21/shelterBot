@@ -25,11 +25,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +51,10 @@ public class MainHandlerImpl implements MainHandler {
 
     private final Pattern pattern = Pattern.compile("([+0-9]{10,})(\\s*)([\\W+]+)");
 
-    public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository, CatCandidateRepository catCandidateRepository, ReportDogRepository reportDogRepository, ReportCatRepository reportCatRepository) {
+    public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository,
+                           CatCandidateRepository catCandidateRepository,
+                           ReportDogRepository reportDogRepository,
+                           ReportCatRepository reportCatRepository) {
         this.bot = bot;
         this.dogCandidateRepository = dogCandidateRepository;
         this.catCandidateRepository = catCandidateRepository;
@@ -200,7 +204,9 @@ public class MainHandlerImpl implements MainHandler {
         if (candidate.getBotState().equals(BotState.GET_REPORT.toString()) && message.caption() != null) {
             String caption = message.caption();
             LocalDate dateToday = LocalDate.now();
+            LocalTime timeNow = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
             String today = dateToday.toString();
+            String time = timeNow.toString();
             PhotoSize[] photo = message.photo();
             String fileId = photo[0].fileId();
             GetFile request = new GetFile(fileId);
@@ -209,7 +215,7 @@ public class MainHandlerImpl implements MainHandler {
             String path = file.filePath();
             try {
                 byte[] data = bot.getFileContent(file);
-                uploadReport(chatId, data, file, userName, today, caption, path, dateToday);
+                uploadReport(chatId, data, file, userName, today, time, caption, path, dateToday);
                 sendMessage = collectSendMessage(chatId, REPORT_OK);
             } catch (IOException e) {
                 logger.info("Something happens...");
@@ -229,7 +235,7 @@ public class MainHandlerImpl implements MainHandler {
     @Value("${telegram.bot.token}")
     private String token;
 
-    private void uploadReport(Long id, byte[] data, File file, String userName, String today, String caption, String path, LocalDate dateToday) throws IOException {
+    private void uploadReport(Long id, byte[] data, File file, String userName, String today, String time, String caption, String path, LocalDate dateToday) throws IOException {
         logger.info("Upload report from user with id: {}, username: {}", id, userName);
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
         List<Long> catIds = catCandidateRepository.findAll().stream().map(CatCandidate::getId).toList();
@@ -239,7 +245,7 @@ public class MainHandlerImpl implements MainHandler {
         } else if (catIds.contains(id)) {
             secondFolder = "/cat_reports/";
         }
-        Path filePath = Path.of(reportsDir + secondFolder + id + " " + userName + "/" + today, userName + " " + today + "." + getExtension(path));
+        Path filePath = Path.of(reportsDir + secondFolder + id + " " + userName + "/" + today, userName + " " + today + " " + time + "." + getExtension(path));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
 
@@ -267,8 +273,7 @@ public class MainHandlerImpl implements MainHandler {
 
         } else if (catIds.contains(id)) {
             CatCandidate catCandidate = catCandidateRepository.findCatCandidateById(id);
-            Optional<CatReport> catReport = Optional.ofNullable(reportCatRepository.findCatReportByDateReportAndCatCandidate_Id(dateToday, id));
-            CatReport newCatReport = catReport.orElse(new CatReport());
+            CatReport newCatReport = new CatReport();
             newCatReport.setCatCandidate(catCandidate);
             newCatReport.setDateReport(dateToday);
             newCatReport.setCaption(caption);
@@ -299,21 +304,25 @@ public class MainHandlerImpl implements MainHandler {
                 .map(CatCandidate::getId)
                 .filter(id -> !reportCatRepository.findCatReportByCatCandidate_Id(id).isEmpty()).toList();
 
-        for (Long id : dogIds) {
-            List<DogReport> dogReports = reportDogRepository.findDogReportByDogCandidate_Id(id).stream().sorted(Comparator.comparing(DogReport::getDateReport)).toList();
-            LocalDate date = dogReports.get(dogReports.size() - 1).getDateReport();
-            Period period = Period.between(rightNow, date);
-            if (Math.abs(period.getDays()) > 1) {
-                resultIds.add(id);
+        if (!dogIds.isEmpty()) {
+            for (Long id : dogIds) {
+                List<DogReport> dogReports = reportDogRepository.findDogReportByDogCandidate_Id(id).stream().sorted(Comparator.comparing(DogReport::getDateReport)).toList();
+                LocalDate date = dogReports.get(dogReports.size() - 1).getDateReport();
+                Period period = Period.between(rightNow, date);
+                if (Math.abs(period.getDays()) > 1) {
+                    resultIds.add(id);
+                }
             }
         }
 
-        for (Long id : catIds) {
-            List<CatReport> catReports = reportCatRepository.findCatReportByCatCandidate_Id(id).stream().sorted(Comparator.comparing(CatReport::getDateReport)).toList();
-            LocalDate date = catReports.get(catReports.size() - 1).getDateReport();
-            Period period = Period.between(rightNow, date);
-            if (Math.abs(period.getDays()) > 1) {
-                resultIds.add(id);
+        if (!catIds.isEmpty()) {
+            for (Long id : catIds) {
+                List<CatReport> catReports = reportCatRepository.findCatReportByCatCandidate_Id(id).stream().sorted(Comparator.comparing(CatReport::getDateReport)).toList();
+                LocalDate date = catReports.get(catReports.size() - 1).getDateReport();
+                Period period = Period.between(rightNow, date);
+                if (Math.abs(period.getDays()) > 1) {
+                    resultIds.add(id);
+                }
             }
         }
 
