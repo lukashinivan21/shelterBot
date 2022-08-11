@@ -39,3 +39,13 @@ CREATE TABLE report_cat
     file_size   bigint NOT NULL,
     report_data bigint  NOT NULL
 );
+
+-- changeSet ivan:2
+
+CREATE TABLE volunteer
+(
+    id_volunteer bigint PRIMARY KEY,
+    user_name TEXT NOT NULL,
+    name_volunteer TEXT,
+    status_volunteer BOOLEAN DEFAULT true
+);

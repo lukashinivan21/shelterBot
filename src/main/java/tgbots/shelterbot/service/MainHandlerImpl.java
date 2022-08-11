@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tgbots.shelterbot.constants.Keyboards;
 import tgbots.shelterbot.models.*;
-import tgbots.shelterbot.repository.CatCandidateRepository;
-import tgbots.shelterbot.repository.DogCandidateRepository;
-import tgbots.shelterbot.repository.ReportCatRepository;
-import tgbots.shelterbot.repository.ReportDogRepository;
+import tgbots.shelterbot.repository.*;
 
 import java.io.*;
 import java.net.URL;
@@ -35,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static tgbots.shelterbot.constants.Emoji.*;
 import static tgbots.shelterbot.constants.StringConstants.*;
 
 @Service
@@ -48,18 +46,24 @@ public class MainHandlerImpl implements MainHandler {
     private final CatCandidateRepository catCandidateRepository;
     private final ReportDogRepository reportDogRepository;
     private final ReportCatRepository reportCatRepository;
+    private final VolunteerRepository volunteerRepository;
+    private final DialogBetweenUserAndVolunteer dialog;
 
     private final Pattern pattern = Pattern.compile("([+0-9]{10,})(\\s*)([\\W+]+)");
+    private final Pattern patternForVolunteer = Pattern.compile("([a-zA-Z\\s*]+|[а-яёА-ЯЁ\\s*]+)");
 
     public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository,
                            CatCandidateRepository catCandidateRepository,
                            ReportDogRepository reportDogRepository,
-                           ReportCatRepository reportCatRepository) {
+                           ReportCatRepository reportCatRepository, VolunteerRepository volunteerRepository,
+                           DialogBetweenUserAndVolunteer dialog) {
         this.bot = bot;
         this.dogCandidateRepository = dogCandidateRepository;
         this.catCandidateRepository = catCandidateRepository;
         this.reportDogRepository = reportDogRepository;
         this.reportCatRepository = reportCatRepository;
+        this.volunteerRepository = volunteerRepository;
+        this.dialog = dialog;
     }
 
 
@@ -74,9 +78,40 @@ public class MainHandlerImpl implements MainHandler {
 
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
         List<Long> catIds = catCandidateRepository.findAll().stream().map(CatCandidate::getId).toList();
+        List<Long> volunteerIds = volunteerRepository.findAll().stream().map(Volunteer::getId).toList();
 
 
         if (text != null) {
+
+            if (text.equals(VOLUNTEER)) {
+                Volunteer newVolunteer = new Volunteer();
+                newVolunteer.setId(chatId);
+                newVolunteer.setUserName(userName);
+                newVolunteer.setFree(true);
+                volunteerRepository.save(newVolunteer);
+                sendMessage = collectSendMessage(chatId, SUCCESS_ADD_VOLUNTEER + " " + SMILE);
+            }
+
+            Matcher matcher1 = patternForVolunteer.matcher(text);
+
+            if (volunteerIds.contains(chatId)) {
+                Volunteer getVol = volunteerRepository.findVolunteerById(chatId);
+                if (getVol.isFree() && matcher1.matches()) {
+                    String name = matcher1.group(1);
+                    getVol.setName(name);
+                    volunteerRepository.save(getVol);
+                    sendMessage = collectSendMessage(chatId, CONGRATULATION_VOL + " " + WINK);
+                } else if (getVol.isFree() && !matcher1.matches()) {
+                    sendMessage = collectSendMessage(chatId, "В имени не должно быть цифр. Будьте внимательнее.");
+                }
+
+                if (!getVol.isFree() && text.equals(FINISH)) {
+                    getVol.setFree(true);
+                    volunteerRepository.save(getVol);
+                    sendMessage = collectSendMessage(chatId, VOL_IS_FREE + " " + COFFEE);
+                }
+            }
+
 
             if (dogIds.contains(chatId) || catIds.contains(chatId)) {
                 Candidate candidate = personFromDogOrCatRepository(chatId);
@@ -119,7 +154,20 @@ public class MainHandlerImpl implements MainHandler {
                                 catCandidateRepository.save((CatCandidate) candidate);
                             }
                         }
-                        case TEXT_BUTTON4 -> sendMessage = collectSendMessage(chatId, MESS_FOR_BUTTON4);
+                        case TEXT_BUTTON4 -> {
+                            sendMessage = collectSendMessage(chatId, MESS_FOR_BUTTON4);
+                            Thread thread = new Thread(() -> {
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                dialog.firstMessage(message);
+                            });
+                            thread.setDaemon(true);
+                            thread.start();
+                        }
+
                         default -> sendMessage = collectSendMessage(chatId, MESS_DEFAULT, Keyboards.mainKeyboard());
                     }
                 }
