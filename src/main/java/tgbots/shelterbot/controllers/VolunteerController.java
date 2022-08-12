@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tgbots.shelterbot.models.Volunteer;
-import tgbots.shelterbot.service.bymodels.VolunteerService;
+import tgbots.shelterbot.service.by_models.VolunteerService;
 
 import java.util.List;
 
@@ -43,8 +43,12 @@ public class VolunteerController {
                                                      @RequestParam(required = false) String userName) {
         Volunteer volunteer = new Volunteer();
         volunteer.setId(id);
-        volunteer.setName(name);
-        volunteer.setUserName(userName);
+        if (name != null) {
+            volunteer.setName(name);
+        }
+        if (userName != null) {
+            volunteer.setUserName(userName);
+        }
         Volunteer result = volunteerService.updateVolunteer(volunteer);
         if (result == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

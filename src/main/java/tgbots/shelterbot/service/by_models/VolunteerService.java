@@ -1,4 +1,4 @@
-package tgbots.shelterbot.service.bymodels;
+package tgbots.shelterbot.service.by_models;
 
 import tgbots.shelterbot.models.Volunteer;
 
