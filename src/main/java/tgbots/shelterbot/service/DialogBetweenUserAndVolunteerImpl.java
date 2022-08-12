@@ -10,12 +10,13 @@ import tgbots.shelterbot.repository.CatCandidateRepository;
 import tgbots.shelterbot.repository.DogCandidateRepository;
 import tgbots.shelterbot.repository.VolunteerRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static tgbots.shelterbot.constants.Emoji.WINK;
 
 @Service
-public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVolunteer{
+public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVolunteer {
 
     private final TelegramBot telegramBot;
     private final VolunteerRepository volunteerRepository;
@@ -33,10 +34,9 @@ public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVo
 
 
     @Override
-    public void firstMessage(Message message) {
+    public List<Long> firstMessage(Long id, String userName) {
 
-        Long userId = message.chat().id();
-        String userName = message.from().username();
+        List<Long> result = new ArrayList<>();
 
         List<Volunteer> volunteers = volunteerRepository.findVolunteersByFree(true);
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
@@ -49,23 +49,30 @@ public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVo
             if (first.getName() != null) {
                 nameVol = first.getName();
             }
-            if (dogIds.contains(userId)) {
-                DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateById(userId);
-                dogCandidate.setBotState(BotState.DIALOG_WITH_VOL.toString());
-                dogCandidateRepository.save(dogCandidate);
-            } else if (catIds.contains(userId)) {
-                CatCandidate catCandidate = catCandidateRepository.findCatCandidateById(userId);
-                catCandidate.setBotState(BotState.DIALOG_WITH_VOL.toString());
-                catCandidateRepository.save(catCandidate);
-            }
-            telegramBot.execute(new SendMessage(userId, "Волонтер свяжется c вами в ближайшее время..."));
+            changeBotState(id, dogIds, catIds);
+            telegramBot.execute(new SendMessage(id, "Волонтер свяжется c вами в ближайшее время..."));
             telegramBot.execute(new SendMessage(volunteerId, "Приветствую, " + nameVol + "!\n" + StringConstants.msgToVol(userName) + " " + WINK));
             first.setFree(false);
             volunteerRepository.save(first);
+            result.add(id);
+            result.add(volunteerId);
         } else {
-            telegramBot.execute(new SendMessage(userId, "К сожалению  в данный момент все волонтеры заняты. Попробуйте позже..."));
+            telegramBot.execute(new SendMessage(id, "К сожалению  в данный момент все волонтеры заняты. Попробуйте позже..."));
         }
-
-
+        return result;
     }
+
+    private void changeBotState(Long userId, List<Long> dogIds, List<Long> catIds) {
+        if (dogIds.contains(userId)) {
+            DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateById(userId);
+            dogCandidate.setBotState(BotState.DIALOG_WITH_VOL.toString());
+            dogCandidateRepository.save(dogCandidate);
+        } else if (catIds.contains(userId)) {
+            CatCandidate catCandidate = catCandidateRepository.findCatCandidateById(userId);
+            catCandidate.setBotState(BotState.DIALOG_WITH_VOL.toString());
+            catCandidateRepository.save(catCandidate);
+        }
+    }
+
+
 }

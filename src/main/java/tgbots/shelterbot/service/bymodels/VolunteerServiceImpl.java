@@ -7,6 +7,7 @@ import tgbots.shelterbot.models.Volunteer;
 import tgbots.shelterbot.repository.VolunteerRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VolunteerServiceImpl implements VolunteerService {
@@ -40,7 +41,15 @@ public class VolunteerServiceImpl implements VolunteerService {
     @Override
     public Volunteer updateVolunteer(Volunteer volunteer) {
         logger.info("Was requested method for update volunteer");
-        return volunteerRepository.save(volunteer);
+        Optional<Volunteer> volunteerOptional = volunteerRepository.findById(volunteer.getId());
+        if (volunteerOptional.isPresent()) {
+            Volunteer result = volunteerOptional.get();
+            result.setName(volunteer.getName());
+            result.setUserName(volunteer.getUserName());
+            return volunteerRepository.save(result);
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -1,9 +1,9 @@
 package tgbots.shelterbot.service.bymodels;
 
 import tgbots.shelterbot.models.Candidate;
-import tgbots.shelterbot.models.DogCandidate;
 
 import java.util.List;
+
 
 public interface CandidateService {
 
@@ -11,11 +11,13 @@ public interface CandidateService {
 
     Candidate getCandidateByUserName(String userName);
 
-    Candidate updateCandidate(Candidate Candidate);
+    Candidate updateCandidate(Candidate candidate);
 
     String deleteCandidateById(Long id);
 
     String deleteCandidateByUserName(String userName);
 
-    List<Candidate> allCandidates();
+    List<? extends Candidate> allCandidates();
+
+
 }

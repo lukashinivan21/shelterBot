@@ -9,7 +9,7 @@ public class StringConstants {
     public static final String FINISH = "/finish";
 
     public static final String VOL_IS_FREE = "Благодарю за качественно проведенную консультацию." +
-            "\nТеперь можно передохнуть и попить чайку или кофе";
+            "\nТеперь можно передохнуть и попить чаю или кофе";
 
     public static final String PHONE_NUMBER = "/myPhoneNumber";
 

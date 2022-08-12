@@ -38,7 +38,13 @@ public class VolunteerController {
     }
 
     @PutMapping
-    public ResponseEntity<Volunteer> updateVolunteer(@RequestBody Volunteer volunteer) {
+    public ResponseEntity<Volunteer> updateVolunteer(@RequestParam Long id,
+                                                     @RequestParam(required = false) String name,
+                                                     @RequestParam(required = false) String userName) {
+        Volunteer volunteer = new Volunteer();
+        volunteer.setId(id);
+        volunteer.setName(name);
+        volunteer.setUserName(userName);
         Volunteer result = volunteerService.updateVolunteer(volunteer);
         if (result == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

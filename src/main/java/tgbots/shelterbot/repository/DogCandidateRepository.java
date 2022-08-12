@@ -8,4 +8,8 @@ import tgbots.shelterbot.models.DogCandidate;
 public interface DogCandidateRepository extends JpaRepository<DogCandidate, Long> {
 
     DogCandidate findDogCandidateById(Long id);
+
+    DogCandidate findDogCandidateByUserName(String userName);
+
+    void deleteDogCandidateByUserName(String userName);
 }

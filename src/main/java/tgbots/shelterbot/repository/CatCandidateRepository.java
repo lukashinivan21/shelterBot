@@ -8,4 +8,8 @@ import tgbots.shelterbot.models.CatCandidate;
 public interface CatCandidateRepository extends JpaRepository<CatCandidate, Long> {
 
     CatCandidate findCatCandidateById(Long id);
+
+    CatCandidate findCatCandidateByUserName(String userName);
+
+    void deleteCatCandidateByUserName(String userName);
 }

@@ -158,20 +158,23 @@ public class MainHandlerImpl implements MainHandler {
                             sendMessage = collectSendMessage(chatId, MESS_FOR_BUTTON4);
                             Thread thread = new Thread(() -> {
                                 try {
-                                    Thread.sleep(10000);
+                                    Thread.sleep(5000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                dialog.firstMessage(message);
+                                dialog.firstMessage(chatId, userName);
                             });
                             thread.setDaemon(true);
                             thread.start();
                         }
 
+
                         default -> sendMessage = collectSendMessage(chatId, MESS_DEFAULT, Keyboards.mainKeyboard());
                     }
                 }
             }
+
+
 
             if (dogIds.contains(chatId) || catIds.contains(chatId)) {
                 Candidate candidate = personFromDogOrCatRepository(chatId);

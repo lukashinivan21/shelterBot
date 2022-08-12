@@ -2,7 +2,9 @@ package tgbots.shelterbot.service;
 
 import com.pengrad.telegrambot.model.Message;
 
+import java.util.List;
+
 public interface DialogBetweenUserAndVolunteer {
 
-    void firstMessage(Message message);
+    List<Long> firstMessage(Long id, String userName);
 }
