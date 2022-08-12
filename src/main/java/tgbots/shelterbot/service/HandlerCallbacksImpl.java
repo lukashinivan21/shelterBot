@@ -33,6 +33,7 @@ public class HandlerCallbacksImpl implements HandlerCallbacks{
     @Override
     public SendMessage handleCallbackQueryAndSendMessage(CallbackQuery callbackQuery) {
         Long chatId = callbackQuery.from().id();
+        String userName = callbackQuery.from().username();
         String data = callbackQuery.data();
 
         String text = null;

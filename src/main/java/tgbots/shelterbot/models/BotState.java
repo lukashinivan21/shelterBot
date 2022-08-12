@@ -4,5 +4,6 @@ public enum BotState {
 
     DIALOG,
     GET_INFO,
-    GET_REPORT
+    GET_REPORT,
+    DIALOG_WITH_VOL
 }
