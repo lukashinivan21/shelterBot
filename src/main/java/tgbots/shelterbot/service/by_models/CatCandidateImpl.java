@@ -1,4 +1,4 @@
-package tgbots.shelterbot.service.bymodels;
+package tgbots.shelterbot.service.by_models;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +50,7 @@ public class CatCandidateImpl implements CandidateService{
             result.setPhoneNumber(candidate.getPhoneNumber());
             return catCandidateRepository.save(result);
         } else {
+            logger.info("Cat candidate with id {} doesn't exist", candidate.getId());
             return null;
         }
     }
@@ -84,5 +85,10 @@ public class CatCandidateImpl implements CandidateService{
             return null;
         }
         return allCatCandidates;
+    }
+
+    @Override
+    public void clear() {
+        catCandidateRepository.deleteAll();
     }
 }

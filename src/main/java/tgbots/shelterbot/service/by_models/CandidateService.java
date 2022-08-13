@@ -1,4 +1,4 @@
-package tgbots.shelterbot.service.bymodels;
+package tgbots.shelterbot.service.by_models;
 
 import tgbots.shelterbot.models.Candidate;
 
@@ -18,6 +18,8 @@ public interface CandidateService {
     String deleteCandidateByUserName(String userName);
 
     List<? extends Candidate> allCandidates();
+
+    void clear();
 
 
 }

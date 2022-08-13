@@ -1,4 +1,4 @@
-package tgbots.shelterbot.service.bymodels;
+package tgbots.shelterbot.service.by_models;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +50,7 @@ public class DogCandidateImpl implements CandidateService{
             result.setPhoneNumber(candidate.getPhoneNumber());
             return dogCandidateRepository.save(result);
         } else {
+            logger.info("Dog candidate with id {} doesn't exist", candidate.getId());
             return null;
         }
     }
@@ -86,5 +87,8 @@ public class DogCandidateImpl implements CandidateService{
         return allDogCandidates;
     }
 
-
+    @Override
+    public void clear() {
+        dogCandidateRepository.deleteAll();
+    }
 }
