@@ -50,6 +50,7 @@ public class DogCandidateImpl implements CandidateService{
             result.setPhoneNumber(candidate.getPhoneNumber());
             return dogCandidateRepository.save(result);
         } else {
+            logger.info("Dog candidate with id {} doesn't exist", candidate.getId());
             return null;
         }
     }

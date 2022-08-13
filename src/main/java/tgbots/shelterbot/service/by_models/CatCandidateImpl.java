@@ -50,6 +50,7 @@ public class CatCandidateImpl implements CandidateService{
             result.setPhoneNumber(candidate.getPhoneNumber());
             return catCandidateRepository.save(result);
         } else {
+            logger.info("Cat candidate with id {} doesn't exist", candidate.getId());
             return null;
         }
     }

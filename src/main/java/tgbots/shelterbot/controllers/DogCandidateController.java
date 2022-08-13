@@ -55,7 +55,7 @@ public class DogCandidateController {
         if (phoneNumber != null && Verification.CHECK_PHONE_NUMBER.matcher(phoneNumber).matches()) {
             dogCandidate.setPhoneNumber(phoneNumber);
         } else if (phoneNumber != null && !Verification.CHECK_PHONE_NUMBER.matcher(phoneNumber).matches()) {
-            throw new ResponseStatusException(HttpStatus.CHECKPOINT);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Candidate result = dogCandidateImpl.updateCandidate(dogCandidate);
         if (result == null) {

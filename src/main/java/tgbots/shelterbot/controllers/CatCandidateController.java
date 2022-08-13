@@ -55,7 +55,7 @@ public class CatCandidateController {
         if (phoneNumber != null && Verification.CHECK_PHONE_NUMBER.matcher(phoneNumber).matches()) {
             catCandidate.setPhoneNumber(phoneNumber);
         } else if (phoneNumber != null && !Verification.CHECK_PHONE_NUMBER.matcher(phoneNumber).matches()) {
-            throw new ResponseStatusException(HttpStatus.CHECKPOINT);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Candidate result = catCandidateImpl.updateCandidate(catCandidate);
         if (result == null) {
