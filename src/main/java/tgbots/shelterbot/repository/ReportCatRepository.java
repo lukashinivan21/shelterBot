@@ -12,7 +12,13 @@ public interface ReportCatRepository extends JpaRepository<CatReport, Long> {
 
     CatReport findCatReportByIdReport(Long id);
 
-    CatReport findCatReportByDateReportAndCatCandidate_Id(LocalDate date, Long id);
+    List <CatReport> findCatReportsByDateReportAndCatCandidate_Id(LocalDate date, Long id);
 
     List<CatReport> findCatReportByCatCandidate_Id(Long id);
+
+    void deleteCatReportsByCatCandidateIdAndDateReport(Long id, LocalDate date);
+
+    void deleteCatReportsByDateReport(LocalDate date);
+
+    void deleteCatReportsByCatCandidateId(Long id);
 }

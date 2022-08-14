@@ -1,7 +1,6 @@
 package tgbots.shelterbot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.springframework.stereotype.Service;
 import tgbots.shelterbot.constants.StringConstants;
@@ -9,8 +8,8 @@ import tgbots.shelterbot.models.*;
 import tgbots.shelterbot.repository.CatCandidateRepository;
 import tgbots.shelterbot.repository.DogCandidateRepository;
 import tgbots.shelterbot.repository.VolunteerRepository;
+import tgbots.shelterbot.service.storeage.RepositoryIds;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static tgbots.shelterbot.constants.Emoji.WINK;
@@ -22,21 +21,22 @@ public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVo
     private final VolunteerRepository volunteerRepository;
     private final DogCandidateRepository dogCandidateRepository;
     private final CatCandidateRepository catCandidateRepository;
+    private final RepositoryIds repositoryIds;
 
     public DialogBetweenUserAndVolunteerImpl(TelegramBot telegramBot, VolunteerRepository volunteerRepository,
                                              DogCandidateRepository dogCandidateRepository,
-                                             CatCandidateRepository catCandidateRepository) {
+                                             CatCandidateRepository catCandidateRepository,
+                                             RepositoryIds repositoryIds) {
         this.telegramBot = telegramBot;
         this.volunteerRepository = volunteerRepository;
         this.dogCandidateRepository = dogCandidateRepository;
         this.catCandidateRepository = catCandidateRepository;
+        this.repositoryIds = repositoryIds;
     }
 
 
     @Override
-    public List<Long> firstMessage(Long id, String userName) {
-
-        List<Long> result = new ArrayList<>();
+    public void firstMessage(Long id, String userName) {
 
         List<Volunteer> volunteers = volunteerRepository.findVolunteersByFree(true);
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
@@ -50,16 +50,17 @@ public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVo
                 nameVol = first.getName();
             }
             changeBotState(id, dogIds, catIds);
-            telegramBot.execute(new SendMessage(id, "Волонтер свяжется c вами в ближайшее время..."));
+            telegramBot.execute(new SendMessage(id, "Волонтер свяжется c вами в ближайшее время... \nПосле завершения общения с волонтером" +
+                    " прошу вас отправить мне команду /start"));
             telegramBot.execute(new SendMessage(volunteerId, "Приветствую, " + nameVol + "!\n" + StringConstants.msgToVol(userName) + " " + WINK));
             first.setFree(false);
             volunteerRepository.save(first);
-            result.add(id);
-            result.add(volunteerId);
+            repositoryIds.addIdsInFirstMap(id, volunteerId);
+            repositoryIds.addIdsInSecondMap(volunteerId, id);
         } else {
             telegramBot.execute(new SendMessage(id, "К сожалению  в данный момент все волонтеры заняты. Попробуйте позже..."));
         }
-        return result;
+
     }
 
     private void changeBotState(Long userId, List<Long> dogIds, List<Long> catIds) {

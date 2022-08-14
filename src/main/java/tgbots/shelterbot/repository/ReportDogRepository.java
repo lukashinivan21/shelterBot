@@ -12,7 +12,13 @@ public interface ReportDogRepository extends JpaRepository<DogReport, Long> {
 
     DogReport findDogReportByIdReport(Long id);
 
-    DogReport findDogReportByDateReportAndDogCandidate_Id(LocalDate date, Long id);
+    List<DogReport> findDogReportsByDateReportAndDogCandidate_Id(LocalDate date, Long id);
 
     List<DogReport> findDogReportByDogCandidate_Id(Long id);
+
+    void deleteDogReportsByDogCandidateIdAndDateReport(Long id, LocalDate date);
+
+    void deleteDogReportsByDateReport(LocalDate date);
+
+    void deleteDogReportsByDogCandidateId(Long id);
 }

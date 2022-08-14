@@ -3,6 +3,7 @@ package tgbots.shelterbot.service.by_models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgbots.shelterbot.models.Candidate;
 import tgbots.shelterbot.models.DogCandidate;
 import tgbots.shelterbot.repository.DogCandidateRepository;
@@ -56,6 +57,7 @@ public class DogCandidateImpl implements CandidateService{
     }
 
     @Override
+    @Transactional
     public String deleteCandidateById(Long id) {
         logger.info("Deleting dog candidate with id " + id);
         List<Long> ids = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
@@ -67,6 +69,7 @@ public class DogCandidateImpl implements CandidateService{
     }
 
     @Override
+    @Transactional
     public String deleteCandidateByUserName(String userName) {
         logger.info("Deleting dog candidate with user name " + userName);
         List<String> userNames = dogCandidateRepository.findAll().stream().map(DogCandidate::getUserName).toList();

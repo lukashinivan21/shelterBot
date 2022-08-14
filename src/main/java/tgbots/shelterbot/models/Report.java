@@ -23,13 +23,13 @@ public class Report {
     private String filePath;
 
     @Column(name = "file_size")
-    private Long fileSize;
+    private long fileSize;
 
     @Column(name = "report_data")
     @Lob
     private byte[] data;
 
-    public Report(Long idReport, String caption, LocalDate dateReport, String filePath, Long fileSize, byte[] data) {
+    public Report(Long idReport, String caption, LocalDate dateReport, String filePath, long fileSize, byte[] data) {
         this.idReport = idReport;
         this.caption = caption;
         this.dateReport = dateReport;
@@ -58,7 +58,7 @@ public class Report {
         return filePath;
     }
 
-    public Long getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
