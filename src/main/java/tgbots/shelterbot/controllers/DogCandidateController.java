@@ -92,7 +92,7 @@ public class DogCandidateController {
     }
 
     @DeleteMapping
-    public ResponseEntity<List<Candidate>> deleteAll() {
+    public ResponseEntity<String> deleteAll() {
         dogCandidateImpl.clear();
         return ResponseEntity.ok().build();
     }

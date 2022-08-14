@@ -23,10 +23,12 @@ public class HandlerCallbacksImpl implements HandlerCallbacks{
 
     private final DogCandidateRepository dogCandidateRepository;
     private final CatCandidateRepository catCandidateRepository;
+    private final DialogBetweenUserAndVolunteer dialog;
 
-    public HandlerCallbacksImpl(DogCandidateRepository dogCandidateRepository, CatCandidateRepository catCandidateRepository) {
+    public HandlerCallbacksImpl(DogCandidateRepository dogCandidateRepository, CatCandidateRepository catCandidateRepository, DialogBetweenUserAndVolunteer dialog) {
         this.dogCandidateRepository = dogCandidateRepository;
         this.catCandidateRepository = catCandidateRepository;
+        this.dialog = dialog;
     }
 
 
@@ -75,7 +77,19 @@ public class HandlerCallbacksImpl implements HandlerCallbacks{
                     changeCatCandidateBotState(chatId, BotState.GET_INFO.toString());
                 }
             }
-            case CALLBACK_BUTTON4 -> text = MESS_FOR_BUTTON4;
+            case CALLBACK_BUTTON4 -> {
+                text = MESS_FOR_BUTTON4;
+                Thread thread = new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    dialog.firstMessage(chatId, userName);
+                });
+                thread.setDaemon(true);
+                thread.start();
+            }
         }
 
         SendMessage message = new SendMessage(chatId, text);
