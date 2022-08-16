@@ -87,4 +87,9 @@ public class Candidate {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return String.format("Пользователь с id: %s; ник в телеграм: @%s; имя: %s; номер телефона: %s", id, userName, name, phoneNumber);
+    }
 }

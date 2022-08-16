@@ -11,12 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import tgbots.shelterbot.repository.VolunteerRepository;
 import tgbots.shelterbot.service.HandlerCallbacks;
 import tgbots.shelterbot.service.MainHandler;
+import tgbots.shelterbot.service.Mention;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static tgbots.shelterbot.constants.StringConstants.LIST_CALLBACKS;
 import static tgbots.shelterbot.constants.StringConstants.MENTION_TO_SEND_REPORT;
@@ -28,12 +31,16 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     private final MainHandler mainHandler;
     private final HandlerCallbacks handlerCallbacks;
+    private final Mention mention;
+    private final VolunteerRepository volunteerRepository;
 
     private final TelegramBot telegramBot;
 
-    public TelegramBotUpdatesListener(MainHandler mainHandler, HandlerCallbacks handlerCallbacks, TelegramBot telegramBot) {
+    public TelegramBotUpdatesListener(MainHandler mainHandler, HandlerCallbacks handlerCallbacks, Mention mention, VolunteerRepository volunteerRepository, TelegramBot telegramBot) {
         this.mainHandler = mainHandler;
         this.handlerCallbacks = handlerCallbacks;
+        this.mention = mention;
+        this.volunteerRepository = volunteerRepository;
         this.telegramBot = telegramBot;
     }
 
@@ -96,9 +103,33 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     @Scheduled(cron = "0 0 12 * * *")
     public void mentionForUserToSendReport() {
-        List<Long> ids = mainHandler.idsForMentionToSendReport();
+        List<Long> ids = mention.idsForMentionToSendReport();
         if (!ids.isEmpty()) {
             ids.forEach(id -> telegramBot.execute(new SendMessage(id, MENTION_TO_SEND_REPORT)));
+        }
+    }
+
+    @Scheduled(cron = "0 30 10 * * *")
+    public void mentionToVolunteer1() {
+        String result = mention.mentionForVolunteer();
+        int size = volunteerRepository.findAll().size();
+        if (size > 0 && !result.isEmpty()) {
+            Random random = new Random();
+            int index = random.nextInt(0, size);
+            Long volunteerId = volunteerRepository.findAll().get(index).getId();
+            telegramBot.execute(new SendMessage(volunteerId, result));
+        }
+    }
+
+    @Scheduled(cron = "0 15 11 * * * ")
+    public void mentionToVolunteerAboutTestPeriod() {
+        String result = mention.mentionForVolunteerAboutTestPeriod();
+        int size = volunteerRepository.findAll().size();
+        if (size > 0 && !result.isEmpty()) {
+            Random random = new Random();
+            int index = random.nextInt(0, size);
+            Long volunteerId = volunteerRepository.findAll().get(index).getId();
+            telegramBot.execute(new SendMessage(volunteerId, result));
         }
     }
 

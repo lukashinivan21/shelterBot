@@ -3,7 +3,6 @@ package tgbots.shelterbot.service;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.SendMessage;
 
-import java.util.List;
 
 public interface MainHandler {
 
@@ -11,5 +10,5 @@ public interface MainHandler {
 
     SendMessage handleMessageWithPhoto(Message message);
 
-    List<Long> idsForMentionToSendReport();
+
 }
