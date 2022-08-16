@@ -13,11 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tgbots.shelterbot.constants.Keyboards;
 import tgbots.shelterbot.models.*;
 import tgbots.shelterbot.repository.*;
 import tgbots.shelterbot.service.storeage.RepositoryIds;
+import tgbots.shelterbot.service.storeage.RepositoryIdsUsersOnTestPeriod;
 
 import java.io.*;
 import java.net.URL;
@@ -25,17 +25,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static tgbots.shelterbot.constants.Emoji.*;
 import static tgbots.shelterbot.constants.StringConstants.*;
 
 @Service
@@ -49,26 +45,30 @@ public class MainHandlerImpl implements MainHandler {
     private final CatCandidateRepository catCandidateRepository;
     private final ReportDogRepository reportDogRepository;
     private final ReportCatRepository reportCatRepository;
-    private final VolunteerRepository volunteerRepository;
     private final DialogBetweenUserAndVolunteer dialog;
     private final RepositoryIds repositoryIds;
+    private final HandlerMessageFromVolunteer handlerMessageFromVolunteer;
+    private final RepositoryIdsUsersOnTestPeriod idsTestPeriod;
 
     private final Pattern pattern = Pattern.compile("([+0-9]{10,})(\\s*)([\\W+]+)");
-    private final Pattern patternForVolunteer = Pattern.compile("([a-zA-Z\\s*]+|[а-яёА-ЯЁ\\s*]+)");
+
 
     public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository,
                            CatCandidateRepository catCandidateRepository,
                            ReportDogRepository reportDogRepository,
-                           ReportCatRepository reportCatRepository, VolunteerRepository volunteerRepository,
-                           DialogBetweenUserAndVolunteer dialog, RepositoryIds repositoryIds) {
+                           ReportCatRepository reportCatRepository,
+                           DialogBetweenUserAndVolunteer dialog, RepositoryIds repositoryIds,
+                           HandlerMessageFromVolunteer handlerMessageFromVolunteer,
+                           RepositoryIdsUsersOnTestPeriod idsTestPeriod) {
         this.bot = bot;
         this.dogCandidateRepository = dogCandidateRepository;
         this.catCandidateRepository = catCandidateRepository;
         this.reportDogRepository = reportDogRepository;
         this.reportCatRepository = reportCatRepository;
-        this.volunteerRepository = volunteerRepository;
         this.dialog = dialog;
         this.repositoryIds = repositoryIds;
+        this.handlerMessageFromVolunteer = handlerMessageFromVolunteer;
+        this.idsTestPeriod = idsTestPeriod;
     }
 
 
@@ -80,52 +80,13 @@ public class MainHandlerImpl implements MainHandler {
 
         SendMessage sendMessage = null;
 
-
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
         List<Long> catIds = catCandidateRepository.findAll().stream().map(CatCandidate::getId).toList();
-        List<Long> volunteerIds = volunteerRepository.findAll().stream().map(Volunteer::getId).toList();
         Map<Long, Long> first = repositoryIds.firstMap();
-        Map<Long, Long> second = repositoryIds.secondMap();
-
 
         if (text != null) {
 
-            if (text.equals(VOLUNTEER)) {
-                Volunteer newVolunteer = new Volunteer();
-                newVolunteer.setId(chatId);
-                newVolunteer.setUserName(userName);
-                newVolunteer.setFree(true);
-                volunteerRepository.save(newVolunteer);
-                sendMessage = collectSendMessage(chatId, SUCCESS_ADD_VOLUNTEER + " " + SMILE);
-            }
-
-            Matcher matcher1 = patternForVolunteer.matcher(text);
-
-            if (volunteerIds.contains(chatId)) {
-                Volunteer getVol = volunteerRepository.findVolunteerById(chatId);
-                if (getVol.isFree() && matcher1.matches()) {
-                    String name = matcher1.group(1);
-                    getVol.setName(name);
-                    volunteerRepository.save(getVol);
-                    sendMessage = collectSendMessage(chatId, CONGRATULATION_VOL + " " + WINK);
-                } else if (getVol.isFree() && !matcher1.matches()) {
-                    sendMessage = collectSendMessage(chatId, "В имени не должно быть цифр. Будьте внимательнее.");
-                }
-
-                if (!getVol.isFree() && text.equals(FINISH)) {
-                    getVol.setFree(true);
-                    volunteerRepository.save(getVol);
-                    repositoryIds.deleteFromSecondMap(chatId);
-                    sendMessage = collectSendMessage(chatId, VOL_IS_FREE + " " + COFFEE);
-                } else if (!getVol.isFree() && !text.equals(FINISH) && second.containsKey(chatId)) {
-                    Long userId = second.get(chatId);
-                    if (userId != null) {
-                        sendMessage = collectSendMessage(userId, text);
-                    }
-
-                }
-            }
-
+            sendMessage = handlerMessageFromVolunteer.messageToOther(chatId, text, userName);
 
             if (dogIds.contains(chatId) || catIds.contains(chatId)) {
                 Candidate candidate = personFromDogOrCatRepository(chatId);
@@ -143,6 +104,7 @@ public class MainHandlerImpl implements MainHandler {
                 }
                 if (first.containsKey(chatId)) {
                     repositoryIds.deleteFromFirstMap(chatId);
+                    first.keySet().remove(chatId);
                 }
             } else if (text.equals(START)) {
                 sendMessage = collectSendMessage(chatId, MAIN_GREETING, Keyboards.chooseShelter());
@@ -292,6 +254,7 @@ public class MainHandlerImpl implements MainHandler {
                 byte[] data = bot.getFileContent(file);
                 uploadReport(chatId, data, file, userName, today, time, caption, path, dateToday);
                 sendMessage = collectSendMessage(chatId, REPORT_OK);
+                idsTestPeriod.addId(chatId);
             } catch (IOException e) {
                 logger.info("Something happens...");
                 e.printStackTrace();
@@ -364,48 +327,7 @@ public class MainHandlerImpl implements MainHandler {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
-    @Override
-    @Transactional
-    public List<Long> idsForMentionToSendReport() {
-        LocalDate rightNow = LocalDate.now();
-        List<Long> resultIds = new ArrayList<>();
 
-        List<Long> dogIds = dogCandidateRepository.findAll()
-                .stream()
-                .map(DogCandidate::getId)
-                .filter(id -> !reportDogRepository.findDogReportByDogCandidate_Id(id).isEmpty()).toList();
-
-        List<Long> catIds = catCandidateRepository.findAll()
-                .stream()
-                .map(CatCandidate::getId)
-                .filter(id -> !reportCatRepository.findCatReportByCatCandidate_Id(id).isEmpty()).toList();
-
-        if (!dogIds.isEmpty()) {
-            for (Long id : dogIds) {
-                List<DogReport> dogReports = reportDogRepository.findDogReportByDogCandidate_Id(id).stream().sorted(Comparator.comparing(DogReport::getDateReport)).toList();
-                LocalDate date = dogReports.get(dogReports.size() - 1).getDateReport();
-                Period period = Period.between(rightNow, date);
-                int diff = Math.abs(period.getDays());
-                if (diff > 1 && diff <= 3) {
-                    resultIds.add(id);
-                }
-            }
-        }
-
-        if (!catIds.isEmpty()) {
-            for (Long id : catIds) {
-                List<CatReport> catReports = reportCatRepository.findCatReportByCatCandidate_Id(id).stream().sorted(Comparator.comparing(CatReport::getDateReport)).toList();
-                LocalDate date = catReports.get(catReports.size() - 1).getDateReport();
-                Period period = Period.between(rightNow, date);
-                int diff = Math.abs(period.getDays());
-                if (diff > 1 && diff <= 3) {
-                    resultIds.add(id);
-                }
-            }
-        }
-
-        return resultIds;
-    }
 
 
 }
