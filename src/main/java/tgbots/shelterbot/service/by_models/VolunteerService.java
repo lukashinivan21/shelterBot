@@ -4,6 +4,9 @@ import tgbots.shelterbot.models.Volunteer;
 
 import java.util.List;
 
+/**
+ * Интерфейс, содержащий методы для взаимодействия с базой волонтеров
+ */
 public interface VolunteerService {
 
     Volunteer getVolunteer(Long id);

@@ -2,6 +2,9 @@ package tgbots.shelterbot.constants;
 
 import com.vdurmont.emoji.EmojiParser;
 
+/**
+ * Класс, хранящий в себе эмодзи, используемые ботом
+ */
 public class Emoji {
 
     public static final String CHECK = EmojiParser.parseToUnicode(":white_check_mark:");

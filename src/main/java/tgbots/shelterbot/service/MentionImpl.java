@@ -43,7 +43,10 @@ public class MentionImpl implements Mention {
         this.reportCatRepository = reportCatRepository;
     }
 
-
+    /**
+     * Метод, формирующий список id пользователей, которые, находясь на испытательном сроке,
+     * не отправляют отчеты более одного дня и <= 3 дней, и которым нужно выслать напоминание.
+     */
     @Override
     @Transactional
     public List<Long> idsForMentionToSendReport() {
@@ -76,6 +79,10 @@ public class MentionImpl implements Mention {
         return resultIds;
     }
 
+    /**
+     * Метод, формирующий сообщение волонтеру со списком тех пользователей, которые,
+     * находясь на испытательном сроке, не отправляют отчеты более 2 и <=  дней, и с которым нужно связяться напрямую.
+     */
     @Override
     @Transactional
     public String mentionForVolunteer() {
@@ -106,43 +113,25 @@ public class MentionImpl implements Mention {
             }
         }
 
-        List<String> allDogCandidates = new ArrayList<>();
-        List<String> allCatCandidates = new ArrayList<>();
+        StringBuilder sbDog = new StringBuilder();
+        StringBuilder sbCat = new StringBuilder();
 
         if (!resultDogIds.isEmpty()) {
             for (Long id : resultDogIds) {
                 DogCandidate candidate = dogCandidateRepository.findDogCandidateById(id);
-                allDogCandidates.add(candidate.toString());
+                sbDog.append("\n").append(candidate.toString()).append(";");
             }
         }
 
         if (!resultCatIds.isEmpty()) {
             for (Long id : resultCatIds) {
                 CatCandidate candidate = catCandidateRepository.findCatCandidateById(id);
-                allCatCandidates.add(candidate.toString());
-            }
-        }
-        StringBuilder sbDog = new StringBuilder();
-
-        if (!allDogCandidates.isEmpty()) {
-            sbDog.append("*_*");
-            for (String s : allDogCandidates) {
-                sbDog.append(s).append("; *_*\n");
-            }
-        }
-
-        StringBuilder sbCat = new StringBuilder();
-
-        if (!allCatCandidates.isEmpty()) {
-            sbCat.append("*_*");
-            for (String s : allCatCandidates) {
-                sbCat.append(s).append("; *_*\n");
+                sbCat.append("\n").append(candidate.toString()).append(";");
             }
         }
 
         String dogResult = sbDog.toString();
         String catResult = sbCat.toString();
-
 
         String result = "";
 
@@ -161,7 +150,10 @@ public class MentionImpl implements Mention {
         return result;
     }
 
-
+    /**
+     * Метод, формирующий сообщение волонтеру со списком тех пользователей, у которых подходит
+     * к концу испытательный срок, и по которым нужно принять решение пройден испытательный срок или нет
+     */
     @Override
     @Transactional
     public String mentionForVolunteerAboutTestPeriod() {
@@ -198,40 +190,20 @@ public class MentionImpl implements Mention {
             }
         }
 
-
-        List<String> allDogCandidates = new ArrayList<>();
-        List<String> allCatCandidates = new ArrayList<>();
+        StringBuilder sbDog = new StringBuilder();
+        StringBuilder sbCat = new StringBuilder();
 
         if (!resultDogIds.isEmpty()) {
             for (Long id : resultDogIds) {
                 DogCandidate candidate = dogCandidateRepository.findDogCandidateById(id);
-                allDogCandidates.add(candidate.toString());
+                sbDog.append("\n").append(candidate.toString()).append(";");
             }
         }
 
         if (!resultCatIds.isEmpty()) {
             for (Long id : resultCatIds) {
                 CatCandidate candidate = catCandidateRepository.findCatCandidateById(id);
-                allCatCandidates.add(candidate.toString());
-            }
-        }
-
-
-        StringBuilder sbDog = new StringBuilder();
-
-        if (!allDogCandidates.isEmpty()) {
-            sbDog.append("*_*");
-            for (String s : allDogCandidates) {
-                sbDog.append(s).append("; *_*\n");
-            }
-        }
-
-        StringBuilder sbCat = new StringBuilder();
-
-        if (!allCatCandidates.isEmpty()) {
-            sbCat.append("*_*");
-            for (String s : allCatCandidates) {
-                sbCat.append(s).append("; *_*\n");
+                sbCat.append("\n").append(candidate.toString()).append(";");
             }
         }
 
@@ -255,7 +227,7 @@ public class MentionImpl implements Mention {
         return result;
     }
 
-
+//    Метод для вычисления разницы между текущей датой и датой последнего отправленного отчета пользователем приюта для кошек
     private int getPeriodCat(LocalDate rightNow, Long id) {
         List<CatReport> catReports = reportCatRepository.findCatReportByCatCandidate_Id(id).stream().sorted(Comparator.comparing(CatReport::getDateReport)).toList();
         LocalDate date = catReports.get(catReports.size() - 1).getDateReport();
@@ -263,6 +235,7 @@ public class MentionImpl implements Mention {
         return Math.abs(period.getDays());
     }
 
+//    Метод для вычисления разницы между текущей датой и датой последнего отправленного отчета пользователем приюта для собак
     private int getPeriodDog(LocalDate rightNow, Long id) {
         List<DogReport> dogReports = reportDogRepository.findDogReportByDogCandidate_Id(id).stream().sorted(Comparator.comparing(DogReport::getDateReport)).toList();
         LocalDate date = dogReports.get(dogReports.size() - 1).getDateReport();
@@ -270,6 +243,7 @@ public class MentionImpl implements Mention {
         return Math.abs(period.getDays());
     }
 
+//     Метод для опредеоения id всех пользователей приюта для собак, у которых есть один и более отправленный отчет
     private List<Long> idsDogCandidate() {
         return dogCandidateRepository.findAll()
                 .stream()
@@ -277,6 +251,7 @@ public class MentionImpl implements Mention {
                 .filter(id -> !reportDogRepository.findDogReportByDogCandidate_Id(id).isEmpty()).toList();
     }
 
+//    Метод для опредеоения id всех пользователей приюта для кошек, у которых есть один и более отправленный отчет
     private List<Long> idsCatCandidate() {
         return catCandidateRepository.findAll()
                 .stream()

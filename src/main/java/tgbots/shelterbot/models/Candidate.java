@@ -3,6 +3,9 @@ package tgbots.shelterbot.models;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * Класс, содержащий сущность, которая описывает пользователя бота
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Candidate {

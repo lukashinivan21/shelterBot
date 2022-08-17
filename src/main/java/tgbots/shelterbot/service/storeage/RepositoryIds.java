@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Класс, необходимый для хранения id пользователя и волонтера,
+ * когда они вступили в диалог
+ */
 @Repository
 public class RepositoryIds {
 

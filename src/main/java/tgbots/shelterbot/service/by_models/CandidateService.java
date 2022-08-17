@@ -4,7 +4,9 @@ import tgbots.shelterbot.models.Candidate;
 
 import java.util.List;
 
-
+/**
+ * Интерфейс, содержащий методы для взаимодействие с базой пользователей
+ */
 public interface CandidateService {
 
     Candidate getCandidateById(Long id);

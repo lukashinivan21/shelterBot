@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Objects;
 
+/**
+ * Класс, содержащий сущность для описания волонтера приюта
+ */
 @Entity
 public class Volunteer {
 

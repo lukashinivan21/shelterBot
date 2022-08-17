@@ -12,6 +12,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис, отвечающий за взаимодействие с базой отчетов приюта для собак
+ */
 @Service
 public class DogReportService implements ReportService{
 

@@ -8,8 +8,15 @@ import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import static tgbots.shelterbot.constants.Emoji.CHECK;
 import static tgbots.shelterbot.constants.StringConstants.*;
 
+/**
+ * Класс, хранящий в себе клавиатуры, используемые ботом.
+ */
 public class Keyboards {
 
+    /**
+     * Метод для создания клавиатуры, необходимой для выбора приюта: приют для собак или приют для кошек
+     * @return {@InlineKeyboardMarkup}
+     */
     public static InlineKeyboardMarkup chooseShelter() {
 
         InlineKeyboardMarkup keyboard1 = new InlineKeyboardMarkup();
@@ -23,6 +30,10 @@ public class Keyboards {
         return keyboard1;
     }
 
+    /**
+     * Метод для создания клавиатуры главного меню
+     * @return {@ReplyKeyboardMarkup}
+     */
     public static ReplyKeyboardMarkup mainKeyboard() {
 
         String[][] rows = new String[4][1];
@@ -35,7 +46,10 @@ public class Keyboards {
         return new ReplyKeyboardMarkup(rows, true, false, true);
     }
 
-
+    /**
+     * Метод для создания клавиатуры, содержащей кнопки для получения основной информации о приюте
+     * @return {@InlineKeyboardMarkup}
+     */
     public static InlineKeyboardMarkup keyboard1() {
 
         InlineKeyboardMarkup keyboard2 = new InlineKeyboardMarkup();
@@ -55,7 +69,11 @@ public class Keyboards {
         return keyboard2;
     }
 
-
+    /**
+     * Метод для создания клавиатуры,содержащей кнопки для получения информации необходимой для
+     * получения питомца из приюта для собак
+     * @return {@InlineKeyboardMarkup}
+     */
     public static InlineKeyboardMarkup keyboard2Dog() {
 
         InlineKeyboardMarkup keyboard3 = new InlineKeyboardMarkup();
@@ -87,6 +105,11 @@ public class Keyboards {
         return keyboard3;
     }
 
+    /**
+     * Метод для создания клавиатуры, содержащей кнопки для получения информации необходимой для
+     * получения питомца из приюта для кошек
+     * @return {@InlineKeyboardMarkup}
+     */
     public static InlineKeyboardMarkup keyboard2Cat() {
 
         InlineKeyboardMarkup keyboard4 = new InlineKeyboardMarkup();
@@ -114,6 +137,10 @@ public class Keyboards {
         return keyboard4;
     }
 
+    /**
+     * Метод для создания клавиатуры, которая может пригодится пользователю при прохождении испытательного срока.
+     * @return {@InlineKeyboardMarkup}
+     */
     public static InlineKeyboardMarkup keyboard3() {
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();

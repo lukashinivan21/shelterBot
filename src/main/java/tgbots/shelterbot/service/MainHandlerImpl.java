@@ -50,6 +50,7 @@ public class MainHandlerImpl implements MainHandler {
     private final HandlerMessageFromVolunteer handlerMessageFromVolunteer;
     private final RepositoryIdsUsersOnTestPeriod idsTestPeriod;
 
+//    Шаблон для сохранения информации о пользователе: имя и номер телефона
     private final Pattern pattern = Pattern.compile("([+0-9]{10,})(\\s*)([\\W+]+)");
 
 
@@ -71,7 +72,10 @@ public class MainHandlerImpl implements MainHandler {
         this.idsTestPeriod = idsTestPeriod;
     }
 
-
+    /**
+     * Метод, служащий для обработки входящих сообщений от пользователей и
+     * в зависимости от текта формирующий ответ в виде сообщения
+     */
     @Override
     public SendMessage handleMessage(Message message) {
         Long chatId = message.chat().id();
@@ -138,7 +142,7 @@ public class MainHandlerImpl implements MainHandler {
                             sendMessage = collectSendMessage(chatId, MESS_FOR_BUTTON4);
                             Thread thread = new Thread(() -> {
                                 try {
-                                    Thread.sleep(5000);
+                                    Thread.sleep(10000);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -189,6 +193,7 @@ public class MainHandlerImpl implements MainHandler {
         return sendMessage;
     }
 
+    // Метод для формирования ответного сообщения
     private SendMessage collectSendMessage(Long chatId, String textAnswer, ReplyKeyboardMarkup keyboardMarkup) {
         return new SendMessage(chatId, textAnswer).replyMarkup(keyboardMarkup);
     }
@@ -200,19 +205,21 @@ public class MainHandlerImpl implements MainHandler {
     private SendMessage collectSendMessage(Long chatId, String textAnswer) {
         return new SendMessage(chatId, textAnswer);
     }
-
+//  Метод для изменения состояния бота пользователя приюта для собак
     private void changeDogCandidateBotState(Long chatId, String botState) {
         DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateById(chatId);
         dogCandidate.setBotState(botState);
         dogCandidateRepository.save(dogCandidate);
     }
 
+//    Метод для изменения состояния бота пользователя приюта для кошек
     private void changeCatCandidateBotState(Long chatId, String botState) {
         CatCandidate catCandidate = catCandidateRepository.findCatCandidateById(chatId);
         catCandidate.setBotState(botState);
         catCandidateRepository.save(catCandidate);
     }
 
+//    Метод, определяющий на основании Id к какому приюту относится пользователь: приюту для собак или кошек
     private Candidate personFromDogOrCatRepository(Long chatId) {
         Candidate person = new Candidate();
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
@@ -225,7 +232,10 @@ public class MainHandlerImpl implements MainHandler {
         return person;
     }
 
-
+    /**
+     * Метод для обработки отчетов от пользователей (фото с подписью) и сохранения
+     * информации в базу данных и на жесткий диск
+     */
     @Override
     public SendMessage handleMessageWithPhoto(Message message) {
 
@@ -273,6 +283,7 @@ public class MainHandlerImpl implements MainHandler {
     @Value("${telegram.bot.token}")
     private String token;
 
+//    Метод для загрузки отчетов от пользователей
     private void uploadReport(Long id, byte[] data, File file, String userName, String today, String time, String caption, String path, LocalDate dateToday) throws IOException {
         logger.info("Upload report from user with id: {}, username: {}", id, userName);
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
