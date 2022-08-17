@@ -6,6 +6,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
+/**
+ * Класс, описывающий отчет, отправляемый пользователем приюта для кошек
+ */
 @Entity
 @Table(name = "report_cat")
 public class CatReport extends Report{

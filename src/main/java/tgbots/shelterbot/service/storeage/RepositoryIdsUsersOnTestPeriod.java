@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Класс, хранящий id пользователей, находящихся на испытательном сроке
+ */
 @Repository
 public class RepositoryIdsUsersOnTestPeriod {
 

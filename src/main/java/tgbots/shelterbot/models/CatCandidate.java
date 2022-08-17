@@ -5,6 +5,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
 
+/**
+ * Класс, описывающий пользователя приюта для кошек
+ */
 @Entity
 @Table(name = "candidate_cat_shelter")
 public class CatCandidate extends Candidate {

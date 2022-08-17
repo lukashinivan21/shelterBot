@@ -19,7 +19,7 @@ import static tgbots.shelterbot.constants.StringConstants.*;
 @Service
 public class HandlerMessageFromVolunteerImpl implements HandlerMessageFromVolunteer {
 
-
+//  Шаблоны возможных сообщений и команд от волонтеров
     private final Pattern patternForVolunteer = Pattern.compile("([a-zA-Z\\s*]+|[а-яёА-ЯЁ\\s*]+)");
     private final Pattern msgFromVolTestPeriodSuccess = Pattern.compile("([0-9]{6,})(\\s*)(SUCCESS)");
     private final Pattern msgFromVolTestPeriodLose = Pattern.compile("([0-9]{6,})(\\s*)(LOSE)");
@@ -36,6 +36,9 @@ public class HandlerMessageFromVolunteerImpl implements HandlerMessageFromVolunt
         this.idsTestPeriod = idsTestPeriod;
     }
 
+    /**
+     * Метод для обработки сообщений и команд от волонтеров и формирования необходимого ответа в виде сообщения
+     */
     @Override
     public SendMessage messageToOther(Long chatId, String text, String userName) {
 
@@ -136,7 +139,7 @@ public class HandlerMessageFromVolunteerImpl implements HandlerMessageFromVolunt
         return sendMessage;
     }
 
-
+//  Метод для формирования ответного сообщения
     private SendMessage collectSendMessage(Long chatId, String textAnswer) {
         return new SendMessage(chatId, textAnswer);
     }

@@ -9,6 +9,9 @@ import tgbots.shelterbot.repository.VolunteerRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервис, отвечающий за взаимодействие с базой волонтеров
+ */
 @Service
 public class VolunteerServiceImpl implements VolunteerService {
 

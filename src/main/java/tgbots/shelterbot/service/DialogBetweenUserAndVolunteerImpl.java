@@ -34,7 +34,10 @@ public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVo
         this.repositoryIds = repositoryIds;
     }
 
-
+    /**
+     * Метод для поиска свободного волонтера в базе. И, если свободный волонтер найден, то происходит отправка сообщений
+     * пользователю и волонтеру для начала диалога между ними.
+     */
     @Override
     public void firstMessage(Long id, String userName) {
 
@@ -63,6 +66,7 @@ public class DialogBetweenUserAndVolunteerImpl implements DialogBetweenUserAndVo
 
     }
 
+//    Метод для изменения состояния бота в случае, если нашелся свободный волонтер для консультации пользователя
     private void changeBotState(Long userId, List<Long> dogIds, List<Long> catIds) {
         if (dogIds.contains(userId)) {
             DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateById(userId);

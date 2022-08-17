@@ -24,6 +24,11 @@ import java.util.Random;
 import static tgbots.shelterbot.constants.StringConstants.LIST_CALLBACKS;
 import static tgbots.shelterbot.constants.StringConstants.MENTION_TO_SEND_REPORT;
 
+/**
+ * Класс, отвечающий за прием входящих обновление и на основании этого
+ * передающий эти обновление на обработку в нужный обработчик.
+ * После получения ответа от обработчика происходит отправка ответа.
+ */
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
@@ -100,7 +105,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-
+    /**
+     * Метод, выполняющий рассылку напоминаний пользователям, если они
+     * не присылают отчеты в соответствии с требованиями, находясь на испытательном сроке.
+     */
     @Scheduled(cron = "0 0 12 * * *")
     public void mentionForUserToSendReport() {
         List<Long> ids = mention.idsForMentionToSendReport();
@@ -109,6 +117,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         }
     }
 
+    /**
+     * Метод, отправляющий волонтеру список злостных нарушителей правил отправки отчетов,
+     * т.е. не присылающих отчет более двух дней.
+     * Волонтер выбтрается случайным образом из списка волонтеров.
+     */
     @Scheduled(cron = "0 30 10 * * *")
     public void mentionToVolunteer1() {
         String result = mention.mentionForVolunteer();
@@ -121,6 +134,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         }
     }
 
+    /**
+     * Метод, отправляющий волонтеру список тех пользователей, испытательный срок которых подошел к концу,
+     * и по которым необходимо принять решение: пройден ли испытатльный срок или нет.
+     * Волонтер выбтрается случайным образом из списка волонтеров.
+     */
     @Scheduled(cron = "0 15 11 * * * ")
     public void mentionToVolunteerAboutTestPeriod() {
         String result = mention.mentionForVolunteerAboutTestPeriod();

@@ -3,6 +3,9 @@ package tgbots.shelterbot.constants;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс, хранящий в себе строковые константы, используемые при функционировании бота
+ */
 public class StringConstants {
 
     public static final String START = "/start";
@@ -10,8 +13,6 @@ public class StringConstants {
 
     public static final String VOL_IS_FREE = "Благодарю за качественно проведенную консультацию." +
             "\nТеперь можно передохнуть и попить чаю или кофе";
-
-    public static final String PHONE_NUMBER = "/myPhoneNumber";
 
     public static final String DOG_SHELTER = "Приют для собак";
     public static final String CALLBACK_DOG = "Пёс";

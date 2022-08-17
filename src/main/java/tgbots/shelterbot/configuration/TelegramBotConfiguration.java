@@ -7,6 +7,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * Конфигурационный класс, необходимый для
+ * присвоения телеграмм-боту уникального токена
+ */
 @Configuration
 @EnableScheduling
 public class TelegramBotConfiguration {

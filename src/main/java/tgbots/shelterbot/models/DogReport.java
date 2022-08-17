@@ -3,6 +3,9 @@ package tgbots.shelterbot.models;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+/**
+ * Класс, описывающий отчет, отправляемый пользователем приюта для собак
+ */
 @Entity
 @Table(name = "report_dog")
 public class DogReport extends Report {

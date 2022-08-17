@@ -31,7 +31,9 @@ public class HandlerCallbacksImpl implements HandlerCallbacks{
         this.dialog = dialog;
     }
 
-
+    /**
+     * Метод, служащий для обработки сигнала от кнопки клавиатуры и формирования необходимого ответа в виде сообщения
+     */
     @Override
     public SendMessage handleCallbackQueryAndSendMessage(CallbackQuery callbackQuery) {
         Long chatId = callbackQuery.from().id();
@@ -99,7 +101,9 @@ public class HandlerCallbacksImpl implements HandlerCallbacks{
         return message;
     }
 
-
+    /**
+     * Метод, служащий для обработки сигналов от кнопки клавиатуры и формирования необходимого ответа в виде документа с подписью
+     */
     @Override
     public SendDocument handleCallbackAndSendDocument(CallbackQuery callbackQuery) {
         Long chatId = callbackQuery.from().id();

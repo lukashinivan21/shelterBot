@@ -10,6 +10,9 @@ import tgbots.shelterbot.repository.CatCandidateRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервис, отвечающий за взаимодействие с базой пользователей приюта для собак
+ */
 @Service
 public class CatCandidateImpl implements CandidateService{
 

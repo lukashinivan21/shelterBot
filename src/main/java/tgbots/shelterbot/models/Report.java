@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Класс, содержащий сущность, которая описывает отчет, отправляемый пользователем
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Report {

@@ -1,5 +1,9 @@
 package tgbots.shelterbot.constants;
 
+/**
+ * Класс, хранящий в себе пути к файлам, содержащим инструкции и рекомендации.
+ * Данные файлы могут быть отправлены пользователю по его запросу.
+ */
 public class FilePath {
 
     public static final String FILE_PATH5 = "/!INFO/Информация о приюте.pdf";

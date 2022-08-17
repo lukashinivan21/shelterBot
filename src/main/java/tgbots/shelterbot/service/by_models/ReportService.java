@@ -5,6 +5,9 @@ import tgbots.shelterbot.models.Report;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Интерфейс, содержащий методы для взаимодействия с базой отчетов
+ */
 public interface ReportService {
 
     List<? extends Report> getReportByCandidateId(Long id);
