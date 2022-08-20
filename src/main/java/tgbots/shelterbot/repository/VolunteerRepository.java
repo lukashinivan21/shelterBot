@@ -13,7 +13,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     Volunteer findVolunteerByName(String name);
 
-    void deleteVolunteerByName(String name);
+    void deleteVolunteerByUserName(String userName);
 
     List<Volunteer> findVolunteersByFree(boolean condition);
 

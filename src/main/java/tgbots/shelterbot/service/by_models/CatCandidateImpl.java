@@ -3,7 +3,7 @@ package tgbots.shelterbot.service.by_models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import tgbots.shelterbot.models.Candidate;
+import org.springframework.transaction.annotation.Transactional;
 import tgbots.shelterbot.models.CatCandidate;
 import tgbots.shelterbot.repository.CatCandidateRepository;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
  * Сервис, отвечающий за взаимодействие с базой пользователей приюта для собак
  */
 @Service
-public class CatCandidateImpl implements CandidateService{
+public class CatCandidateImpl implements CandidateService<CatCandidate>{
 
     private final Logger logger = LoggerFactory.getLogger(CatCandidateImpl.class);
 
@@ -25,7 +25,7 @@ public class CatCandidateImpl implements CandidateService{
     }
 
     @Override
-    public Candidate getCandidateById(Long id) {
+    public CatCandidate getCandidateById(Long id) {
         CatCandidate catCandidate = catCandidateRepository.findById(id).orElse(null);
         if (catCandidate == null) {
             logger.info("Cat candidate with id {} doesn't exist", id);
@@ -34,7 +34,7 @@ public class CatCandidateImpl implements CandidateService{
     }
 
     @Override
-    public Candidate getCandidateByUserName(String userName) {
+    public CatCandidate getCandidateByUserName(String userName) {
         CatCandidate catCandidate = catCandidateRepository.findCatCandidateByUserName(userName);
         if (catCandidate == null) {
             logger.info("Cat candidate with user name {} doesn't exist", userName);
@@ -43,7 +43,7 @@ public class CatCandidateImpl implements CandidateService{
     }
 
     @Override
-    public Candidate updateCandidate(Candidate candidate) {
+    public CatCandidate updateCandidate(CatCandidate candidate) {
         logger.info("Was requested method for update cat candidate");
         Optional<CatCandidate> catCandidateOptional = catCandidateRepository.findById(candidate.getId());
         if (catCandidateOptional.isPresent()) {
@@ -59,6 +59,7 @@ public class CatCandidateImpl implements CandidateService{
     }
 
     @Override
+    @Transactional
     public String deleteCandidateById(Long id) {
         logger.info("Deleting cat candidate with id " + id);
         List<Long> ids = catCandidateRepository.findAll().stream().map(CatCandidate::getId).toList();
@@ -70,6 +71,7 @@ public class CatCandidateImpl implements CandidateService{
     }
 
     @Override
+    @Transactional
     public String deleteCandidateByUserName(String userName) {
         logger.info("Deleting cat candidate with user name " + userName);
         List<String> userNames = catCandidateRepository.findAll().stream().map(CatCandidate::getUserName).toList();

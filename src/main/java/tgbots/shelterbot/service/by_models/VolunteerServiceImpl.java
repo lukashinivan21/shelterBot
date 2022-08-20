@@ -3,6 +3,7 @@ package tgbots.shelterbot.service.by_models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tgbots.shelterbot.models.Volunteer;
 import tgbots.shelterbot.repository.VolunteerRepository;
 
@@ -56,6 +57,7 @@ public class VolunteerServiceImpl implements VolunteerService {
     }
 
     @Override
+    @Transactional
     public String deleteVolunteer(Long id) {
         logger.info("Deleting volunteer with id " + id);
         List<Long> ids = volunteerRepository.findAll().stream().map(Volunteer::getId).toList();
@@ -67,11 +69,12 @@ public class VolunteerServiceImpl implements VolunteerService {
     }
 
     @Override
-    public String deleteVolunteer(String name) {
-        logger.info("Deleting volunteer with name " + name);
-        List<String> names = volunteerRepository.findAll().stream().map(Volunteer::getName).toList();
-        if (names.contains(name)) {
-            volunteerRepository.deleteVolunteerByName(name);
+    @Transactional
+    public String deleteVolunteer(String userName) {
+        logger.info("Deleting volunteer with userName " + userName);
+        List<String> userNames = volunteerRepository.findAll().stream().map(Volunteer::getUserName).toList();
+        if (userNames.contains(userName)) {
+            volunteerRepository.deleteVolunteerByUserName(userName);
             return "SUCCESS";
         }
         return null;

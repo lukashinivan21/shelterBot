@@ -5,18 +5,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgbots.shelterbot.models.CatReport;
-import tgbots.shelterbot.models.Report;
 import tgbots.shelterbot.repository.ReportCatRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис, отвечающий за взаимодействие с базой отчетов приюта для кошек
  */
 @Service
-public class CatReportService implements ReportService{
+public class CatReportService implements ReportService<CatReport>{
 
     private final Logger logger = LoggerFactory.getLogger(CatReportService.class);
 
@@ -29,7 +29,7 @@ public class CatReportService implements ReportService{
 
     @Override
     @Transactional
-    public List<? extends Report> getReportByCandidateId(Long id) {
+    public List<CatReport> getReportByCandidateId(Long id) {
         logger.info("Was request method for getting reports of users with id: {}", id );
         List<CatReport> result = reportCatRepository.findCatReportByCatCandidate_Id(id);
         if (result.isEmpty()) {
@@ -39,7 +39,7 @@ public class CatReportService implements ReportService{
     }
 
     @Override
-    public List<? extends Report> getAllReports() {
+    public List<CatReport> getAllReports() {
         logger.info("Was request method for getting all reports in cat data base");
         List<CatReport> result = reportCatRepository.findAll();
         if (result.isEmpty()) {
@@ -63,13 +63,24 @@ public class CatReportService implements ReportService{
     }
 
     @Override
-    public Report findReportByReportId(Long id) {
+    public CatReport findReportByReportId(Long id) {
         logger.info("Search cat report with id " + id);
-        Report result = reportCatRepository.findById(id).orElse(null);
+        CatReport result = reportCatRepository.findById(id).orElse(null);
         if (result == null) {
             logger.info("There is not report with id " + id);
         }
         return result;
+    }
+
+    @Override
+    public String getReportCaption(Long id) {
+        logger.info("Request for getting caption of report with id " + id);
+        String caption = null;
+        Optional<CatReport> report = reportCatRepository.findById(id);
+        if (report.isPresent()) {
+            caption = report.get().getCaption();
+        }
+        return caption;
     }
 
     @Override
