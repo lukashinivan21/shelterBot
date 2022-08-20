@@ -8,15 +8,15 @@ import java.util.List;
 /**
  * Интерфейс, содержащий методы для взаимодействия с базой отчетов
  */
-public interface ReportService {
+public interface ReportService <T extends Report> {
 
-    List<? extends Report> getReportByCandidateId(Long id);
+    List<T> getReportByCandidateId(Long id);
 
-    List<? extends  Report> getAllReports();
+    List<T> getAllReports();
 
     List<Long> idsOfReportsByCandidateIdAndDate(Long id, LocalDate date);
 
-    Report findReportByReportId(Long id);
+    T findReportByReportId(Long id);
 
     String deleteReportsByCandidateIdAndDateReport(Long id, LocalDate date);
 
@@ -25,4 +25,8 @@ public interface ReportService {
     String deleteReportsByDate(LocalDate date);
 
     void clear();
+
+    String getReportCaption(Long id);
+
+
 }

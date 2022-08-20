@@ -17,7 +17,7 @@ public interface VolunteerService {
 
     String deleteVolunteer(Long id);
 
-    String deleteVolunteer(String name);
+    String deleteVolunteer(String userName);
 
     List<Volunteer> allVolunteers();
 }

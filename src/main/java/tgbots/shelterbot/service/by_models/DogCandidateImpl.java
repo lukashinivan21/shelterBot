@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tgbots.shelterbot.models.Candidate;
 import tgbots.shelterbot.models.DogCandidate;
 import tgbots.shelterbot.repository.DogCandidateRepository;
 
@@ -15,7 +14,7 @@ import java.util.Optional;
  * Сервис, отвечающий за взаимдействие в базой пользователей приюта для собак
  */
 @Service
-public class DogCandidateImpl implements CandidateService{
+public class DogCandidateImpl implements CandidateService<DogCandidate>{
 
     private final Logger logger = LoggerFactory.getLogger(DogCandidateImpl.class);
 
@@ -26,7 +25,7 @@ public class DogCandidateImpl implements CandidateService{
     }
 
     @Override
-    public Candidate getCandidateById(Long id) {
+    public DogCandidate getCandidateById(Long id) {
         DogCandidate dogCandidate = dogCandidateRepository.findById(id).orElse(null);
         if (dogCandidate == null) {
             logger.info("Dog candidate with id {} doesn't exist", id);
@@ -35,7 +34,7 @@ public class DogCandidateImpl implements CandidateService{
     }
 
     @Override
-    public Candidate getCandidateByUserName(String userName) {
+    public DogCandidate getCandidateByUserName(String userName) {
         DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateByUserName(userName);
         if (dogCandidate == null) {
             logger.info("Dog candidate with user name {} doesn't exist", userName);
@@ -44,7 +43,7 @@ public class DogCandidateImpl implements CandidateService{
     }
 
     @Override
-    public Candidate updateCandidate(Candidate candidate) {
+    public DogCandidate updateCandidate(DogCandidate candidate) {
         logger.info("Was requested method for update dog candidate");
         Optional<DogCandidate> candidateOptional = dogCandidateRepository.findById(candidate.getId());
         if (candidateOptional.isPresent()) {

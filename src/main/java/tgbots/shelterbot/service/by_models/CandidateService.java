@@ -7,19 +7,19 @@ import java.util.List;
 /**
  * Интерфейс, содержащий методы для взаимодействие с базой пользователей
  */
-public interface CandidateService {
+public interface CandidateService <T extends Candidate> {
 
-    Candidate getCandidateById(Long id);
+    T getCandidateById(Long id);
 
-    Candidate getCandidateByUserName(String userName);
+    T getCandidateByUserName(String userName);
 
-    Candidate updateCandidate(Candidate candidate);
+    T updateCandidate(T candidate);
 
     String deleteCandidateById(Long id);
 
     String deleteCandidateByUserName(String userName);
 
-    List<? extends Candidate> allCandidates();
+    List<T> allCandidates();
 
     void clear();
 
