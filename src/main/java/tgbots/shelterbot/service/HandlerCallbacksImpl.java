@@ -19,7 +19,7 @@ import static tgbots.shelterbot.constants.FilePath.*;
 import static tgbots.shelterbot.constants.StringConstants.*;
 
 @Service
-public class HandlerCallbacksImpl implements HandlerCallbacks{
+public class HandlerCallbacksImpl implements HandlerCallbacks {
 
     private final DogCandidateRepository dogCandidateRepository;
     private final CatCandidateRepository catCandidateRepository;
