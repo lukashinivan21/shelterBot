@@ -178,7 +178,7 @@ public class DogReportController {
             })
     @GetMapping(value = "/report-photo-from-file")
     public void downloadReport(@Parameter(description = "Id отчета, получаемый из запроса getIdsOfReports", example = "5") @RequestParam Long id,
-                               HttpServletResponse response) throws IOException {
+                               HttpServletResponse response) {
         DogReport result = dogReportService.findReportByReportId(id);
         if (result == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -189,6 +189,8 @@ public class DogReportController {
             response.setContentType("image/jpeg");
             response.setContentLength((int) result.getFileSize());
             is.transferTo(os);
+        } catch (IOException exception) {
+            System.out.println("Something happens...");
         }
     }
 

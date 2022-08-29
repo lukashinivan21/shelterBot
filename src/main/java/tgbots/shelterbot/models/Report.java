@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Report {
+public abstract class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

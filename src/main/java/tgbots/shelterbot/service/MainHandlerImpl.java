@@ -50,8 +50,8 @@ public class MainHandlerImpl implements MainHandler {
     private final HandlerMessageFromVolunteer handlerMessageFromVolunteer;
     private final RepositoryIdsUsersOnTestPeriod idsTestPeriod;
 
-//    Шаблон для сохранения информации о пользователе: имя и номер телефона
-    private final Pattern pattern = Pattern.compile("([+0-9]{10,})(\\s*)([\\W+]+)");
+    //    Шаблон для сохранения информации о пользователе: имя и номер телефона
+    private final Pattern pattern = Pattern.compile("([+])([0-9]{11,})(\\s*)([a-zA-Z\\s*]+|[а-яёА-ЯЁ\\s*]+)");
 
 
     public MainHandlerImpl(TelegramBot bot, DogCandidateRepository dogCandidateRepository,
@@ -171,8 +171,8 @@ public class MainHandlerImpl implements MainHandler {
                 Matcher matcher = pattern.matcher(text);
                 if (candidate.getBotState().equals(BotState.GET_INFO.toString()) && matcher.matches()) {
 
-                    String phoneNumber = matcher.group(1);
-                    String name = matcher.group(3);
+                    String phoneNumber = matcher.group(1) + matcher.group(2);
+                    String name = matcher.group(4);
                     candidate.setName(name);
                     candidate.setPhoneNumber(phoneNumber);
                     candidate.setUserName(userName);
@@ -205,21 +205,22 @@ public class MainHandlerImpl implements MainHandler {
     private SendMessage collectSendMessage(Long chatId, String textAnswer) {
         return new SendMessage(chatId, textAnswer);
     }
-//  Метод для изменения состояния бота пользователя приюта для собак
+
+    //  Метод для изменения состояния бота пользователя приюта для собак
     private void changeDogCandidateBotState(Long chatId, String botState) {
         DogCandidate dogCandidate = dogCandidateRepository.findDogCandidateById(chatId);
         dogCandidate.setBotState(botState);
         dogCandidateRepository.save(dogCandidate);
     }
 
-//    Метод для изменения состояния бота пользователя приюта для кошек
+    //    Метод для изменения состояния бота пользователя приюта для кошек
     private void changeCatCandidateBotState(Long chatId, String botState) {
         CatCandidate catCandidate = catCandidateRepository.findCatCandidateById(chatId);
         catCandidate.setBotState(botState);
         catCandidateRepository.save(catCandidate);
     }
 
-//    Метод, определяющий на основании Id к какому приюту относится пользователь: приюту для собак или кошек
+    //    Метод, определяющий на основании Id к какому приюту относится пользователь: приюту для собак или кошек
     private Candidate personFromDogOrCatRepository(Long chatId) {
         Candidate person = new Candidate();
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
@@ -255,7 +256,7 @@ public class MainHandlerImpl implements MainHandler {
             String today = dateToday.toString();
             String time = timeNow.toString();
             PhotoSize[] photo = message.photo();
-            String fileId = photo[0].fileId();
+            String fileId = photo[photo.length - 2].fileId();
             GetFile request = new GetFile(fileId);
             GetFileResponse response = bot.execute(request);
             File file = response.file();
@@ -283,7 +284,7 @@ public class MainHandlerImpl implements MainHandler {
     @Value("${telegram.bot.token}")
     private String token;
 
-//    Метод для загрузки отчетов от пользователей
+    //    Метод для загрузки отчетов от пользователей
     private void uploadReport(Long id, byte[] data, File file, String userName, String today, String time, String caption, String path, LocalDate dateToday) throws IOException {
         logger.info("Upload report from user with id: {}, username: {}", id, userName);
         List<Long> dogIds = dogCandidateRepository.findAll().stream().map(DogCandidate::getId).toList();
@@ -294,7 +295,7 @@ public class MainHandlerImpl implements MainHandler {
         } else if (catIds.contains(id)) {
             secondFolder = "/cat_reports/";
         }
-        Path filePath = Path.of(reportsDir + secondFolder + id + " " + userName + "/" + today, userName + " " + time + "." + getExtension(path));
+        Path filePath = Path.of(reportsDir + secondFolder + id + " " + userName + "/" + today, userName + " " + time.replace(":", ".") + "." + getExtension(path));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
 
@@ -337,8 +338,6 @@ public class MainHandlerImpl implements MainHandler {
     private String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
-
-
 
 
 }
